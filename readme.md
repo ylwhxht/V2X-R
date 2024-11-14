@@ -5,7 +5,7 @@
 # V2X-R: Cooperative LiDAR-4D Radar Fusion for 3D Object Detection with Denoising Diffusion 
 [![paper](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2411.08402)
 ## Introduction
-This is the official repository for the V2X-R dataset, including the V2X-R dataset and the implementation of the benchmark model, and MDD module.  (coming soon)
+This is the official repository for the V2X-R, including the V2X-R dataset and the implementation of the benchmark model, and MDD module.  (coming soon)
 
 
 ## V2X-R Dataset Manual
