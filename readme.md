@@ -1,8 +1,5 @@
 <div align="center">
-  <img src="images/logo.png" width="600"/>
-  <div>&nbsp;</div>
-
-  <div>&nbsp;</div>
+  <img src="images/logo.png" width="200"/>
 </div>
 
 # V2X-R: Cooperative LiDAR-4D Radar Fusion for 3D Object Detection with Denoising Diffusion 
