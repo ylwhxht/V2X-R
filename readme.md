@@ -13,7 +13,9 @@ The first simulated V2X dataset incorporating LiDAR, camera, and 4D radar. V2X-R
 
 ## Installation
 
-## Performance and Implementation of Benchmark Models
+## Benchmark Models
+### Performance
+### Implementation 
 
 
-## Training with Multimodal Denoising Diffusion (MDD) 
+## Training with MDD
