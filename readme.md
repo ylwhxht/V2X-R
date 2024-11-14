@@ -1,3 +1,10 @@
+<div align="center">
+  <img src="images/opencood.png" width="600"/>
+  <div>&nbsp;</div>
+
+  <div>&nbsp;</div>
+</div>
+
 # V2X-R: Cooperative LiDAR-4D Radar Fusion for 3D Object Detection with Denoising Diffusion 
 [![paper](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2411.08402)
 ## Introduction
