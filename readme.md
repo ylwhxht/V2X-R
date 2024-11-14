@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="images/opencood.png" width="600"/>
+  <img src="images/logo.png" width="600"/>
   <div>&nbsp;</div>
 
   <div>&nbsp;</div>
@@ -16,7 +16,7 @@ The first simulated V2X dataset incorporating LiDAR, camera, and 4D radar. V2X-R
 
 ## Installation
 
-## Perfomance and Implementation of Benchmark Models
+## Performance and Implementation of Benchmark Models
 
 
 ## Training with Multimodal Denoising Diffusion (MDD) 
