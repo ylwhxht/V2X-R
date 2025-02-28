@@ -155,7 +155,7 @@ All benchmark model downloads require a login (using the username "Guest" and th
 
 ### Multi-modal Diffusion Denoising Results (AttFuse train with fog simulation)
 |       **Modality**       | **Snow (IoU=0.3/0.5/0.7)** | **Fog (IoU=0.3/0.5/0.7)** | **normal (IoU=0.3/0.5/0.7)** | **Config** |  **Model**  |
-|:----------------------:|:--------------------------------:|:-----------------------------:|:----------:|:-----------:|
+|:----------------------:|:--------------------------------:|:-----------------------------:|:-----------------------------:|:----------:|:-----------:|
 |    LiDAR    |         62.48/61.53/51.11        |      74.10/71.35/57.30       |87.14/85.00/74.40|      [√](V2X-R/opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_AttFuse.yaml)     | [model-95M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r) |
 |    LiDAR-4D Radar Fusion w/o MDD    |         79.63/77.37/63.71 | 85.00/80.64/62.89 | 91.77/90.43/82.22     | [√](V2X-R/opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_V2XViT.yaml)     | [model-118M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r) |
 |    LiDAR-4D Radar Fusion w MDD    |         83.78/81.19/66.86 | 87.37/83.90/68.64 | 91.61/90.27/82.43 |[√](V2X-R/opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_V2XViT.yaml)     | [model-118M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r) |
