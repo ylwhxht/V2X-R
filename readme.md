@@ -117,8 +117,9 @@ All benchmark model can be downloaded in [here](http://39.98.109.195:1000/) usin
 If you need to run the following pre trained models:
 1. Download the corresponding pre-trained model to **folder A** and **rename it as 0.pth**
 2. Copy the corresponding configuration file to folder A and **rename it as config.yaml**
-3. Run the command according to the "Test the model" section, where the parameter *--model_ir A --eval_ epoch is 0*
-
+3. Run the command according to the "Test the model" section, where the parameter *--model_dir A --eval_ epoch 0*
+4. Modify evalsim in the configuration file to test the results under different simulated weather conditions
+5. *Please note: Due to code version switching, there may be slight differences between the reproduced results and the reported accuracy. It is recommended to use the reproduced results as the standard. If you find that the difference is unacceptable, there may be some problem, please raise an issue.*
 
 ### 4DRadar-based Cooperative 3D Detector (no-compression)
 | **Method** | **Validation (IoU=0.3/0.5/0.7)** | **Testing (IoU=0.3/0.5/0.7)** | **Config** |  **Model**  |
