@@ -110,7 +110,16 @@ We provide calibration information for each sensor (LiDAR, 4D radar, camera) of 
 
 
 ## :balloon: Benchmark and Models Zoo
-All benchmark model downloads require a login (using the username "Guest" and the password "guest_CMD")
+
+### Introduction
+All benchmark model can be downloaded in [here](http://39.98.109.195:1000/) using the username "Guest" and the password "guest_CMD".
+
+If you need to run the following pre trained models:
+1. Download the corresponding pre-trained model to **folder A** and **rename it as 0.pth**
+2. Copy the corresponding configuration file to folder A and **rename it as config.yaml**
+3. Run the command according to the "Test the model" section, where the parameter *--model_ir A --eval_ epoch is 0*
+
+
 ### 4DRadar-based Cooperative 3D Detector (no-compression)
 | **Method** | **Validation (IoU=0.3/0.5/0.7)** | **Testing (IoU=0.3/0.5/0.7)** | **Config** |  **Model**  |
 |:--------------------------------:|:--------------------------------:|:-----------------------------:|:----------:|:-----------:|
@@ -154,7 +163,7 @@ All benchmark model downloads require a login (using the username "Guest" and th
 |      [IROS2024:SICP](https://arxiv.org/abs/2312.04822)     |         82.46/79.44/61.51        |       86.19/84.20/68.15       |      [√](V2X-R/opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_Sicp.yaml)     | [model-28M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r) |
 
 ### Multi-modal Diffusion Denoising Results (AttFuse train with fog simulation)
-|       **Modality**       | **Snow (IoU=0.3/0.5/0.7)** | **Fog (IoU=0.3/0.5/0.7)** | **normal (IoU=0.3/0.5/0.7)** | **Config** |  **Model**  |
+|       **Modality**       | **Snow (IoU=0.3/0.5/0.7)** | **Fog (IoU=0.3/0.5/0.7)** | **Normal (IoU=0.3/0.5/0.7)** | **Config** |  **Model**  |
 |:----------------------:|:--------------------------------:|:-----------------------------:|:-----------------------------:|:----------:|:-----------:|
 |    LiDAR    |         62.48/61.53/51.11        |      74.10/71.35/57.30       |87.14/85.00/74.40|      [√](V2X-R/opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_AttFuse.yaml)     | [model-95M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r) |
 |    LiDAR-4D Radar Fusion w/o MDD    |         79.63/77.37/63.71 | 85.00/80.64/62.89 | 91.77/90.43/82.22     | [√](V2X-R/opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_V2XViT.yaml)     | [model-118M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r) |
@@ -201,6 +210,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node
 
 
 ### Test the model
+
 Before you run the following command, first make sure the `validation_dir` in config.yaml under your checkpoint folder
 
 ```python
