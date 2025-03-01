@@ -150,24 +150,30 @@ def load_model(saved_path, model, epoch=None, start_from_best=True):
             file_list = glob.glob(os.path.join(saved_path, 'net_epoch_bestval_at*.pth'))
             if file_list:
                 assert len(file_list) == 1
-                model.load_state_dict(torch.load(file_list[0], map_location='cpu'), strict=False)
+                state_dict = torch.load(file_list[0], map_location='cpu')
+                # 将 cdd 权重映射到 mdd
+                if 'cdd' in state_dict:
+                    state_dict['mdd'] = state_dict.pop('cdd')
+                model.load_state_dict(state_dict, strict=False)
                 return eval(file_list[0].split("/")[-1].rstrip(".pth").lstrip("net_epoch_bestval_at")), model
         initial_epoch = findLastCheckpoint(saved_path)
             
     if initial_epoch > 0:
         print('resuming by loading epoch %d' % initial_epoch)
         
-    state_dict_ = torch.load(os.path.join(saved_path, 'net_epoch%d.pth' % initial_epoch))
+    state_dict_ = torch.load(os.path.join(saved_path, 'net_epoch%d.pth' % initial_epoch), map_location='cuda:0')
     state_dict = {}
     # convert data_parallal to model
     for k in state_dict_:
         if k.startswith('module') and not k.startswith('module_list'):
             state_dict[k[7:]] = state_dict_[k]
         else:
-            state_dict[k] = state_dict_[k]
-    
+            if k.startswith('cdd'):
+                #rename cdd to mdd
+                state_dict['m'+k[1:]] = state_dict_[k]
+            else:
+                state_dict[k] = state_dict_[k]
     model_state_dict = model.state_dict()
-
     for k in state_dict:
         if k in model_state_dict:
             if state_dict[k].shape != model_state_dict[k].shape:
