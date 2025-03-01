@@ -117,7 +117,7 @@ All benchmark model can be downloaded in [here](http://39.98.109.195:1000/) usin
 If you need to run the following pre trained models:
 1. Download the corresponding pre-trained model to **folder A** and **rename it as 0.pth**
 2. Copy the corresponding configuration file to folder A and **rename it as config.yaml**
-3. Run the command according to the "Test the model" section, where the parameter *--model_dir A --eval_ epoch 0*
+3. Run the command according to the "Test the model" section, with the parameter *--model_dir A --eval_ epoch 0*
 4. Modify evalsim in the configuration file to test the results under different simulated weather conditions
 5. *Please note: Due to code version switching, there may be slight differences between the reproduced results and the reported accuracy. It is recommended to use the reproduced results as the standard. If you find that the difference is unacceptable, there may be some problem, please raise an issue.*
 
@@ -166,9 +166,9 @@ If you need to run the following pre trained models:
 ### Multi-modal Diffusion Denoising Results (AttFuse train with fog simulation)
 |       **Modality**       | **Snow (IoU=0.3/0.5/0.7)** | **Fog (IoU=0.3/0.5/0.7)** | **Normal (IoU=0.3/0.5/0.7)** | **Config** |  **Model**  |
 |:----------------------:|:--------------------------------:|:-----------------------------:|:-----------------------------:|:----------:|:-----------:|
-|    LiDAR    |         62.48/61.53/51.11        |      74.10/71.35/57.30       |87.14/85.00/74.40|      [√](V2X-R/opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_AttFuse.yaml)     | [model-95M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r) |
-|    LiDAR-4D Radar Fusion w/o MDD    |         79.63/77.37/63.71 | 85.00/80.64/62.89 | 91.77/90.43/82.22     | [√](V2X-R/opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_V2XViT.yaml)     | [model-118M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r) |
-|    LiDAR-4D Radar Fusion w MDD    |         83.78/81.19/66.86 | 87.37/83.90/68.64 | 91.61/90.27/82.43 |[√](V2X-R/opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_V2XViT.yaml)     | [model-118M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r) |
+|    LiDAR    |         62.48/61.53/51.11        |      74.10/71.35/57.30       |87.14/85.00/74.40|      [√](V2X-R/opencood/hypes_yaml/V2X-R/LiDAR/V2XR_attfuse.yaml)     |soon|
+|    LiDAR-4D Radar Fusion w/o MDD    |         79.63/77.37/63.71 | 85.00/80.64/62.89 | 91.77/90.43/82.22     | [√](V2X-R/opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_AttFuse.yaml)     | soon|
+|    LiDAR-4D Radar Fusion w MDD    |         83.78/81.19/66.86 | 87.37/83.90/68.64 | 91.61/90.27/82.43 |[√](V2X-R/opencood/hypes_yaml/V2X-R/L_4DR_Fusion_with_MDD/V2XR_AttFuse.yaml)     | soon |
 
 ## :balloon: Quickly Get Started
 
