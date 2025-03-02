@@ -166,7 +166,7 @@ If you need to run the following pre trained models:
 ### Multi-modal Diffusion Denoising Results (AttFuse train with fog simulation)
 |       **Modality**       | **Snow (IoU=0.3/0.5/0.7)** | **Fog (IoU=0.3/0.5/0.7)** | **Normal (IoU=0.3/0.5/0.7)** | **Config** |  **Model**  |
 |:----------------------:|:--------------------------------:|:-----------------------------:|:-----------------------------:|:----------:|:-----------:|
-|    LiDAR    |         62.48/61.53/51.11        |      74.10/71.35/57.30       |87.14/85.00/74.40|      [√](opencood/hypes_yaml/V2X-R/LiDAR/V2XR_attfuse.yaml)     |[model-25M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r_w_MDD)|
+|    LiDAR    |         68.73/65.35/45.54          |      81.71/78.48/61.52       |89.30/87.39/76.09|      [√](opencood/hypes_yaml/V2X-R/LiDAR/V2XR_attfuse.yaml)     |[model-25M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r_w_MDD)|
 |    LiDAR-4D Radar Fusion w/o MDD    |         79.63/77.37/63.71 | 85.00/80.64/62.89 | 91.77/90.43/82.22     | [√](opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_AttFuse.yaml)     | [model-96M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r_w_MDD)|
 |    LiDAR-4D Radar Fusion w MDD    |         83.78/81.19/66.86 | 87.37/83.90/68.64 | 91.61/90.27/82.43 |[√](opencood/hypes_yaml/V2X-R/L_4DR_Fusion_with_MDD/V2XR_AttFuse.yaml)     | [model-96M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/l+r_w_MDD) |
 
