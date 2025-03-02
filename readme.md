@@ -231,10 +231,12 @@ The evaluation results  will be dumped in the model directory.
 ### Train model with Multi-modal Diffusion Denoising (MDD) module 
 The relevant code section about our MDD module can be found in [here](opencood/models/mdd_modules).
 
-To embed the MDD module in the model, change the following in the yaml file of the original model:
+To embed the MDD module in the model, change the following in the **yaml file** of the original model:
 - add use_DeLidar=True
+- set train_sim = True (eval_sim = True when you want evaluate adverse weather performance), and sim_weather = _fog_0.060 or _snow_2.5_2.0
 - rewrite core_method to be the version that adds the MDD module, for [example](opencood/models/point_pillar_intermediate_lrf_MDD.py).
-- add mdd_block to the model's args and set the parameters in it (see [example_yaml](opencood/hypes_yaml/V2X-R/L_4DR_Fusion_with_MDD/V2XR_AttFuse.yaml) for details)
+- add mdd_block to the model args and set the parameters in it (see [example_yaml](opencood/hypes_yaml/V2X-R/L_4DR_Fusion_with_MDD/V2XR_AttFuse.yaml) for details)
+
 
 For example, to train V2XR_AttFuse (LiDAR-4D radar fusion version, 4 GPUs) from scratch with MDD:
 ```
