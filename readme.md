@@ -11,6 +11,7 @@
 ## :balloon: Introduction
 :wave: This is the official repository for the V2X-R, including the V2X-R dataset and the implementation of the benchmark model, and MDD module. 
 
+
 This repo is also a unified and integrated multi-agent collaborative perception framework for **LiDAR-based**, **4D radar-based**, **LiDAR-4D radar fusion** strategies!
 
 ### Features
@@ -61,6 +62,8 @@ Thanks to the [CARLA](https://github.com/carla-simulator/carla) simulator and th
 
 ### Download and Decompression
 :ledger: Log in [here](http://39.98.109.195:1000/) using the username "Guest" and the password "guest_CMD" to download the dataset.
+
+Another [download method](https://huggingface.co/datasets/hx24/V2X-R/tree/main) for V2X-Rdataset (huggingface).
 
 
 Since the data is large (including 3xLiDAR{normal, fog, snow}, 1xradar, 4ximages for each agent). We have compressed the sequence data of each agent, you can refer to this code for batch decompression after downloading.
