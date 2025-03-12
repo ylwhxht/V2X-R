@@ -76,7 +76,7 @@ def decompress_v2x_r(root_dir, save_dir):
             if file.endswith('.7z'):
                 file_path = os.path.join(root, file)
                 path = root.split('/')
-                extract_path = os.path.join(save_dir, path[-2], path[-1], file[:-3])
+                extract_path = os.path.join(save_dir, path[-2], path[-1])
                 os.makedirs(extract_path, exist_ok=True)
                 subprocess.run(['7z', 'x', '-o' + extract_path + '/', file_path])
 
