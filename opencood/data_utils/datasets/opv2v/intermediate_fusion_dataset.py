@@ -14,7 +14,7 @@ from collections import OrderedDict
 
 import numpy as np
 import torch
-
+import random
 import opencood.data_utils.datasets
 import opencood.data_utils.post_processor as post_processor
 from opencood.utils import box_utils
@@ -46,7 +46,7 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
         # if project first, cav's lidar will first be projected to
         # the ego's coordinate frame. otherwise, the feature will be
         # projected instead.
-        self.proj_first = False
+        self.proj_first = True
 
         self.use_Radar = True
         self.use_Lidar = True
@@ -444,6 +444,10 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
                 if len(de_lidar_np)==0 and len(radar_np)!=0:
                     de_lidar_np = radar_np[:3,:]
                 processed_de_lidar = self.pre_processor.preprocess(de_lidar_np)
+                # to keep same num of cav modality data
+                while processed_de_lidar['voxel_features'].shape[0]==0 or processed_de_lidar['voxel_coords'].shape[0]==0:
+                    de_lidar_np = np.array([random.choices(range(0,70),k=4), random.choices(range(0,70),k=4),random.choices(range(0,70),k=4), random.choices(range(0,70),k=4),random.choices(range(0,70),k=4), random.choices(range(0,70),k=4)], dtype = np.float64)
+                    processed_de_lidar = self.pre_processor.preprocess(de_lidar_np)
 
                 
             # to keep same num of cav modality data
@@ -451,10 +455,11 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
                 radar_np = lidar_np[:3,:]
             if len(lidar_np)==0 and len(radar_np)!=0:
                 lidar_np = radar_np[:3,:]
+            
                 
         processed_radar = self.pre_processor.preprocess(radar_np)
         processed_lidar = self.pre_processor.preprocess(lidar_np)
-        import random
+        # to keep same num of cav modality data
         while processed_lidar['voxel_features'].shape[0]==0 or processed_lidar['voxel_coords'].shape[0]==0:
             lidar_np = np.array([random.choices(range(0,70),k=4), random.choices(range(0,70),k=4),random.choices(range(0,70),k=4), random.choices(range(0,70),k=4),random.choices(range(0,70),k=4), random.choices(range(0,70),k=4)], dtype = np.float64)
             processed_lidar = self.pre_processor.preprocess(lidar_np)
