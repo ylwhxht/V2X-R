@@ -149,7 +149,6 @@ If you need to run the following pre trained models:
 | [ICRA2023:CoAlign](https://arxiv.org/abs/2211.07214)               | 84.43/82.29/70.68                | 88.12/86.99/80.05             |      [√](opencood/hypes_yaml/V2X-R/LiDAR/V2XR_coalign.yaml)     | [model-43M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/lidar) |
 | [ICCV:AdaFusion](https://openaccess.thecvf.com/content/WACV2023/html/Qiao_Adaptive_Feature_Fusion_for_Cooperative_Perception_Using_LiDAR_Point_Clouds_WACV_2023_paper.html)                 | 88.19/86.96/75.55                | 92.72/91.64/84.81             |      [√](opencood/hypes_yaml/V2X-R/LiDAR/V2XR_adafusion.yaml)     | [model-27M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/lidar) |
 | [IROS2024:SICP](https://arxiv.org/abs/2312.04822)                  | 81.08/77.56/58.10                | 84.65/82.18/66.73             |      [√](opencood/hypes_yaml/V2X-R/LiDAR/V2XR_sicp.yaml)     | [model-28M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/lidar) |
-| [WACV2024:MACP](https://openaccess.thecvf.com/content/WACV2024/html/Ma_MACP_Efficient_Model_Adaptation_for_Cooperative_Perception_WACV_2024_paper.html)                  | 72.80/70.90/60.00                | 83.70/83.10/75.50             |      soon     | [model-61M](http://39.98.109.195:1000/files/V2X-R_Dataset(compressed)/benchmark/lidar) |
 
 
 ### LiDAR-4D Radar Fusion Cooperative 3D Detector (no-compression)
