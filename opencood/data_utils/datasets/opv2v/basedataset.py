@@ -66,8 +66,18 @@ class BaseDataset(Dataset):
         self.visualize = visualize
         self.train = train
         self.train_sim = False
+        if 'train_sim' in params:
+            self.train_sim = params['train_sim']
         self.eval_sim = False
+        if 'eval_sim' in params:
+            self.eval_sim = params['eval_sim']
         self.sim_weather = None #_fog_0.060,'_snow_2.5_2.0'
+        if self.eval_sim or self.train_sim:
+            if 'sim_weather' in params:
+                self.sim_weather = params['sim_weather']
+            else:
+                print("Need which weather to simulate")
+                exit()
         self.pre_processor = None
         self.post_processor = None
         self.data_augmentor = DataAugmentor(params['data_augment'],
@@ -120,7 +130,6 @@ class BaseDataset(Dataset):
             self.max_cav = 7
         else:
             self.max_cav = params['train_params']['max_cav']
-
         # first load all paths of different scenarios
         scenario_folders = sorted([os.path.join(root_dir, x)
                                    for x in os.listdir(root_dir) if
@@ -129,8 +138,8 @@ class BaseDataset(Dataset):
         # lidar: path, cameras:list of path}}}}
         self.scenario_database = OrderedDict()
         self.len_record = []
-
         # loop over all scenarios
+        cnt = 0 
         for (i, scenario_folder) in enumerate(scenario_folders):
             self.scenario_database.update({i: OrderedDict()})
 
@@ -173,11 +182,15 @@ class BaseDataset(Dataset):
                 for timestamp in timestamps:
                     self.scenario_database[i][cav_id][timestamp] = \
                         OrderedDict()
-
+                    cnt+=1
                     yaml_file = os.path.join(cav_path,
                                              timestamp + '.yaml')
                     lidar_file = os.path.join(cav_path,
                                               timestamp + '.pcd')
+                    if self.eval_sim and not self.train:
+                            flag=True
+                            lidar_file = os.path.join(cav_path,
+                                                timestamp + self.sim_weather + '.pcd')
                     radar_file = os.path.join(cav_path,
                                               timestamp + '_radar.pcd')
                     camera_files = self.load_camera_files(cav_path, timestamp)
@@ -204,6 +217,7 @@ class BaseDataset(Dataset):
                 else:
                     self.scenario_database[i][cav_id]['ego'] = False
         print('dataset length: ', self.len_record[-1])
+        print('data length: ', cnt)
         # print(f"using sim weather,the eval_sim is {flag} and the sim_weather is {self.sim_weather}")
 
     def __len__(self):
@@ -313,6 +327,11 @@ class BaseDataset(Dataset):
             # data[cav_id]['params']['scenario'] = cav_content[timestamp_key]['scenario']
             # data[cav_id]['params']['timestamp'] = timestamp_key
             lidar_file = cav_content[timestamp_key_delay]['lidar']
+            if self.train_sim and self.train:
+                aug = random.randint(0, 6)
+                if  aug <= 2 :
+                    #print("Use ", self.sim_weather_list[aug], "to train")
+                    lidar_file = lidar_file.replace('.pcd', self.sim_weather + '.pcd')
             data[cav_id]['lidar_np'], label = \
                 pcd_utils.pcd_to_np(lidar_file, get_weather = True)
             data[cav_id]['de_lidar_np'] = data[cav_id]['lidar_np'][label==0]
