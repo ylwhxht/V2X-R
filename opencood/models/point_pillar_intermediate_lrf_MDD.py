@@ -63,6 +63,7 @@ class PointPillarIntermediateLRFMDD(nn.Module):
         
 
     def forward(self, data_dict):
+        
         lidar_voxel_features = data_dict['processed_lidar']['voxel_features']
         lidar_voxel_coords = data_dict['processed_lidar']['voxel_coords']
         lidar_voxel_num_points = data_dict['processed_lidar']['voxel_num_points']

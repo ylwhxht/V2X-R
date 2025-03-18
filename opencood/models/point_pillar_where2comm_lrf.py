@@ -109,7 +109,7 @@ class PointPillarWhere2commLRF(nn.Module):
             'record_len': record_len
         }
         pairwise_t_matrix = data_dict['pairwise_t_matrix']
-
+        comm_rates = batch_dict['spatial_features'].count_nonzero().item()
         batch_dict = self.backbone(batch_dict)
 
         # N, C, H', W': [N, 256, 48, 176]

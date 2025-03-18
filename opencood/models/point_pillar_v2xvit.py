@@ -91,7 +91,7 @@ class PointPillarV2XVit(nn.Module):
         #     data_dict['prior_encoding'].unsqueeze(-1).unsqueeze(-1)
         prior_encoding = torch.zeros(len(record_len), self.max_cav, 3, 1, 1).to(record_len.device)
               
-
+        # print(voxel_features.shape)
         batch_dict = {'voxel_features': voxel_features,
                       'voxel_coords': voxel_coords,
                       'voxel_num_points': voxel_num_points,
@@ -100,7 +100,7 @@ class PointPillarV2XVit(nn.Module):
         batch_dict = self.pillar_vfe(batch_dict)
         # n, c -> N, C, H, W
         batch_dict = self.scatter(batch_dict)
-
+        comm_rates = batch_dict['spatial_features'].count_nonzero().item()
         _, _, H, W = batch_dict['spatial_features'].shape
         self.downsample_rate = 1
 
@@ -113,6 +113,8 @@ class PointPillarV2XVit(nn.Module):
         # compressor
         if self.compression:
             spatial_features_2d = self.naive_compressor(spatial_features_2d)
+
+        # comm_rates = spatial_features_2d.count_nonzero().item()
         # N, C, H, W -> B, L, C, H, W
         regroup_feature, mask = regroup(spatial_features_2d, record_len, self.max_cav)
 
@@ -150,5 +152,10 @@ class PointPillarV2XVit(nn.Module):
 
         output_dict = {'psm': psm,
                        'rm': rm}
-
+        output_dict.update({
+            'mask': 0,
+            'each_mask': 0,
+            'comm_rate': comm_rates
+        })
+        # print(comm_rates)
         return output_dict

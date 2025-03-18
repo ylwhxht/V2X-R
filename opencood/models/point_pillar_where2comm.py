@@ -93,7 +93,6 @@ class PointPillarWhere2comm(nn.Module):
         voxel_num_points = data_dict[self.modality]['voxel_num_points']
         record_len = data_dict['record_len']
         pairwise_t_matrix = data_dict['pairwise_t_matrix']
-
         batch_dict = {'voxel_features': voxel_features,
                       'voxel_coords': voxel_coords,
                       'voxel_num_points': voxel_num_points,
@@ -102,14 +101,16 @@ class PointPillarWhere2comm(nn.Module):
         batch_dict = self.pillar_vfe(batch_dict)
         # n, c -> N, C, H, W
         batch_dict = self.scatter(batch_dict)
+        comm_rates = batch_dict['spatial_features'].count_nonzero().item()
         batch_dict = self.backbone(batch_dict)
 
         # N, C, H', W': [N, 256, 48, 176]
         spatial_features_2d = batch_dict['spatial_features_2d']
+        
         # Down-sample feature to reduce memory
         if self.shrink_flag:
             spatial_features_2d = self.shrink_conv(spatial_features_2d)
-
+        # comm_rates = spatial_features_2d.count_nonzero().item()
         psm_single = self.cls_head(spatial_features_2d)
 
         # Compressor
@@ -134,6 +135,10 @@ class PointPillarWhere2comm(nn.Module):
 
         psm = self.cls_head(fused_feature)
         rm = self.reg_head(fused_feature)
-
         output_dict = {'psm': psm, 'rm': rm, 'com': communication_rates}
+        output_dict.update({
+            'mask': 0,
+            'each_mask': 0,
+            'comm_rate': comm_rates
+        })
         return output_dict

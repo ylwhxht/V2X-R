@@ -1,31 +1,25 @@
-# -*- coding: utf-8 -*-
-# Author: Runsheng Xu <rxx3386@ucla.edu>, Hao Xiang <haxiang@g.ucla.edu>
-# License: TDG-Attribution-NonCommercial-NoDistrib
-
+"""
+Author: Yifan Lu <yifan_lu@sjtu.edu.cn>
+"""
 
 import argparse
 import os
 import time
-
-import sys
-root_path = os.path.abspath(__file__)
-root_path = '/'.join(root_path.split('/')[:-3])
-sys.path.append(root_path)
+from typing import OrderedDict
 
 import torch
+import open3d as o3d
 from torch.utils.data import DataLoader
-
-import opencood.hypes_yaml.yaml_utils as yaml_utils
-from opencood.tools import train_utils
-# from opencood.tools import train_utils as train_utils
-from opencood.tools import inference_utils as inference_utils
-from opencood.data_utils.datasets import build_dataset
-from opencood.visualization import simple_vis
-from tqdm import tqdm
-from PIL import Image
 import numpy as np
-from typing import OrderedDict
+
+# import opencood.hypes_yaml.yaml_utils as yaml_utils
+import opencood.hypes_yaml.yaml_utils as yaml_utils
+from opencood.tools import train_utils, inference_utils
+from opencood.data_utils.datasets import build_dataset
 from opencood.utils import eval_utils_opv2v as eval_utils
+from opencood.visualization import simple_vis
+
+torch.multiprocessing.set_sharing_strategy('file_system')
 
 def test_parser():
     parser = argparse.ArgumentParser(description="synthetic data generation")
@@ -61,9 +55,9 @@ def test_parser():
 def main():
     opt = test_parser()
     assert opt.fusion_method in ['late', 'early', 'intermediate', 'no', 'no_w_uncertainty', 'single']
-    # assert not (opt.show_vis and opt.show_sequence), 'you can only visualize ' \
-    #                                                 'the results in single ' \
-    #                                                 'image mode or video mode'
+    assert not (opt.show_vis and opt.show_sequence), 'you can only visualize ' \
+                                                    'the results in single ' \
+                                                    'image mode or video mode'
 
     hypes = yaml_utils.load_yaml(None, opt)
     left_hand = True if 'left_hand' in hypes and hypes['left_hand'] else False
@@ -87,8 +81,8 @@ def main():
     # rot_mean_list = [0, 0, 0, 0] # 旋转噪声均值
     pos_std_list = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6] # 位姿噪声标准差
     rot_std_list = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6] # 旋转噪声标准差
-    pos_mean_list = [0, 0, 0, 0, 0 ,0 , 0] # 位姿噪声均值
-    rot_mean_list = [0, 0, 0, 0, 0 ,0 , 0] # 旋转噪声均值
+    pos_mean_list = [0, 0, 0, 0] # 位姿噪声均值
+    rot_mean_list = [0, 0, 0, 0] # 旋转噪声均值
     """
     pos_std_list = [0.6]
     rot_std_list = [0.6]

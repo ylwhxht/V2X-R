@@ -96,6 +96,7 @@ class PointPillarSpatialCooper(nn.Module):
         batch_dict = self.pillar_vfe(batch_dict)
         # n, c -> N, C, H, W
         batch_dict = self.scatter(batch_dict)
+        comm_rates = batch_dict['spatial_features'].count_nonzero().item()
         batch_dict = self.backbone(batch_dict)
 
         spatial_features_2d = batch_dict['spatial_features_2d']
@@ -105,7 +106,7 @@ class PointPillarSpatialCooper(nn.Module):
         # compressor
         if self.compression:
             spatial_features_2d = self.naive_compressor(spatial_features_2d)
-
+        # comm_rates = spatial_features_2d.count_nonzero().item()
         fused_feature = self.fusion_net(spatial_features_2d, record_len)
 
         psm = self.cls_head(fused_feature)
@@ -113,5 +114,10 @@ class PointPillarSpatialCooper(nn.Module):
 
         output_dict = {'psm': psm,
                        'rm': rm}
+        output_dict.update({
+            'mask': 0,
+            'each_mask': 0,
+            'comm_rate': comm_rates
+        })
 
         return output_dict

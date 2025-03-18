@@ -113,7 +113,7 @@ class PointPillarSiCP(nn.Module):
         # calculate pairwise affine transformation matrix
         _, _, H0, W0 = batch_dict['spatial_features'].shape 
         t_matrix = normalize_pairwise_tfm(data_dict['pairwise_t_matrix'], H0, W0, self.voxel_size[0])
-
+        comm_rates = batch_dict['spatial_features'].count_nonzero().item()
         batch_dict = self.backbone(batch_dict)
 
         spatial_features_2d = batch_dict['spatial_features_2d']
@@ -124,6 +124,7 @@ class PointPillarSiCP(nn.Module):
         if self.compression:
             spatial_features_2d = self.naive_compressor(spatial_features_2d)
 
+        # comm_rates = spatial_features_2d.count_nonzero().item()
         if self.training:
             ego = spatial_features_2d[0,:,:,:].unsqueeze(0)
             fused_feature = self.fusion_net(spatial_features_2d, record_len, t_matrix)
@@ -146,7 +147,12 @@ class PointPillarSiCP(nn.Module):
                 psm = self.cls_head(fused_feature)
                 rm = self.reg_head(fused_feature)
             output_dict = {'psm': psm,
-                           'rm': rm}   
+                           'rm': rm}  
+        output_dict.update({
+            'mask': 0,
+            'each_mask': 0,
+            'comm_rate': comm_rates
+        }) 
 
         return output_dict
 

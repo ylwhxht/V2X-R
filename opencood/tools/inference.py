@@ -96,7 +96,7 @@ def main():
     print('Loading Model from checkpoint')
     saved_path = opt.model_dir
     epoch_id, model = train_utils.load_model(saved_path, model, opt.eval_epoch, start_from_best=opt.eval_best_epoch)
-        
+    
     model.zero_grad()
     model.eval()
 
@@ -218,6 +218,55 @@ def main():
                 simple_vis.visualize(pred_box_tensor, gt_box_tensor, batch_data['ego']['origin_lidar'][0],
                                      hypes['preprocess']['cav_lidar_range'], # hypes['postprocess']['gt_range'], 
                                      vis_save_path, method='bev', left_hand=left_hand, vis_pred_box=True)
+                # if opt.fusion_method == 'intermediate_with_comm':
+                #     vis_save_path = os.path.join(opt.model_dir, 'vis_mask')
+                #     if not os.path.exists(vis_save_path):
+                #         os.makedirs(vis_save_path)
+                #     vis_save_path = os.path.join(opt.model_dir, 'vis_mask/%05d.png' % i)
+
+                #     # 1, H, W
+                #     mask = mask[0][0].cpu().numpy()
+                #     H, W = mask.shape
+                #     draw_map = np.zeros((H*W, 3))
+
+                #     mask1d = mask.reshape(-1)
+
+                #     for index, value in enumerate(mask1d):
+                #         draw_map[index][0] = 255 if value==2 or value==4 else 0
+                #         draw_map[index][1] = 255 if value==1 or value==4 else 125 if value==2 else 0
+                #         draw_map[index][2] = 255 if value==3 or value==4 else 0
+
+                #     # 1:fusion cell, green = [0,255,0]
+                #     # 2:LiDAR cell, orange = [255,125,0]
+                #     # 3:camera cell, blue = [0,0,255]
+                #     # 4:other cell, white = [255, 255, 255] black=[0,0,0]
+                #     draw_map = draw_map.reshape(H, W, 3)
+                #     pil_depth = Image.fromarray(draw_map.astype(np.uint8))
+                #     pil_depth.save(vis_save_path)
+
+
+                #     vis_save_path = os.path.join(opt.model_dir, 'vis_emask')
+                #     if not os.path.exists(vis_save_path):
+                #         os.makedirs(vis_save_path)
+
+                #     each_mask = each_mask[:,0]
+                #     draw_emap = np.zeros((2, H*W, 3))
+                #     emask1d = each_mask.reshape(2, H*W)
+
+                #     for j in range(2):
+                #         for index, value in enumerate(emask1d[j]):
+                #             draw_emap[j][index][0] = 255 if value else 0
+                #             draw_emap[j][index][1] = 255 if value else 0
+                #             draw_emap[j][index][2] = 255 if value else 0
+                #         vis_save_path = os.path.join(opt.model_dir, 'vis_emask/{}_{}.png'.format(i, j))
+
+                #         # 1:fusion cell, green = [0,255,0]
+                #         # 2:LiDAR cell, orange = [255,125,0]
+                #         # 3:camera cell, blue = [0,0,255]
+                #         # 4:other cell, white = [255, 255, 255] black=[0,0,0]
+                #         emap = draw_emap[j].reshape(H, W, 3)
+                #         pil_mask = Image.fromarray(emap.astype(np.uint8))
+                #         pil_mask.save(vis_save_path)
                 """
                 
                 if opt.fusion_method == 'intermediate_with_comm':
@@ -281,9 +330,10 @@ def main():
     else:
         comm_rates = 0
     ap_30, ap_50, ap_70 = eval_utils.eval_final_results(result_stat, opt.model_dir)
-    
+    import math
+    #comm_rates_base2=math.log(comm_rates,2)
     with open(os.path.join(saved_path, 'result.txt'), 'a+') as f:
-        msg = 'Epoch: {} | AP @0.3: {:.04f} | AP @0.5: {:.04f} | AP @0.7: {:.04f} | comm_rate: {:.06f}\n'.format(epoch_id, ap_30, ap_50, ap_70, comm_rates)
+        msg = 'Epoch: {} | AP @0.3: {:.04f} | AP @0.5: {:.04f} | AP @0.7: {:.04f} | comm_rate: {:.06f} \n'.format(epoch_id, ap_30, ap_50, ap_70, comm_rates)
         if opt.comm_thre is not None:
             msg = 'Epoch: {} | AP @0.3: {:.04f} | AP @0.5: {:.04f} | AP @0.7: {:.04f} | comm_rate: {:.06f} | comm_thre: {:.04f}\n'.format(epoch_id, ap_30, ap_50, ap_70, comm_rates, opt.comm_thre)
         f.write(msg)

@@ -444,7 +444,6 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
                 if len(de_lidar_np)==0 and len(radar_np)!=0:
                     de_lidar_np = radar_np[:3,:]
                 processed_de_lidar = self.pre_processor.preprocess(de_lidar_np)
-                # to keep same num of cav modality data
                 while processed_de_lidar['voxel_features'].shape[0]==0 or processed_de_lidar['voxel_coords'].shape[0]==0:
                     de_lidar_np = np.array([random.choices(range(0,70),k=4), random.choices(range(0,70),k=4),random.choices(range(0,70),k=4), random.choices(range(0,70),k=4),random.choices(range(0,70),k=4), random.choices(range(0,70),k=4)], dtype = np.float64)
                     processed_de_lidar = self.pre_processor.preprocess(de_lidar_np)
@@ -459,7 +458,7 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
                 
         processed_radar = self.pre_processor.preprocess(radar_np)
         processed_lidar = self.pre_processor.preprocess(lidar_np)
-        # to keep same num of cav modality data
+        
         while processed_lidar['voxel_features'].shape[0]==0 or processed_lidar['voxel_coords'].shape[0]==0:
             lidar_np = np.array([random.choices(range(0,70),k=4), random.choices(range(0,70),k=4),random.choices(range(0,70),k=4), random.choices(range(0,70),k=4),random.choices(range(0,70),k=4), random.choices(range(0,70),k=4)], dtype = np.float64)
             processed_lidar = self.pre_processor.preprocess(lidar_np)

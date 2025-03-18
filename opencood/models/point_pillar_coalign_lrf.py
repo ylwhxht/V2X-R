@@ -47,7 +47,7 @@ class PointPillarCoAlignLRF(nn.Module):
 
         self.voxel_size = args['voxel_size']
 
-        # multiscale fusion network modules
+        # multiscale fusion network modules 
         self.fusion_net = nn.ModuleList()
         for i in range(len(args['res_bev_backbone']['layer_nums'])):
              # If proj_first = True, no actual warping is performed

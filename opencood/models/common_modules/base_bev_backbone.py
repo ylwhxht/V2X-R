@@ -98,7 +98,7 @@ class BaseBEVBackbone(nn.Module):
         ups = []
         ret_dict = {}
         x = spatial_features
-
+        # print(-1,x.count_nonzero().item())
         for i in range(len(self.blocks)):
             x = self.blocks[i](x)
 
@@ -109,6 +109,7 @@ class BaseBEVBackbone(nn.Module):
                 ups.append(self.deblocks[i](x))
             else:
                 ups.append(x)
+            # print(i,x.count_nonzero().item())
 
         if len(ups) > 1:
             x = torch.cat(ups, dim=1)

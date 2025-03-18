@@ -81,7 +81,7 @@ class PointPillarCoBEVT(nn.Module):
         voxel_num_points = data_dict[self.modality]['voxel_num_points']
         record_len = data_dict['record_len']
         # spatial_correction_matrix = data_dict['spatial_correction_matrix']
-
+        # print(voxel_features.shape)
         batch_dict = {'voxel_features': voxel_features,
                       'voxel_coords': voxel_coords,
                       'voxel_num_points': voxel_num_points,
@@ -90,6 +90,7 @@ class PointPillarCoBEVT(nn.Module):
         batch_dict = self.pillar_vfe(batch_dict)
         # n, c -> N, C, H, W
         batch_dict = self.scatter(batch_dict)
+        comm_rates = batch_dict['spatial_features'].count_nonzero().item()
         batch_dict = self.backbone(batch_dict)
 
         spatial_features_2d = batch_dict['spatial_features_2d']
@@ -100,9 +101,9 @@ class PointPillarCoBEVT(nn.Module):
         if self.compression:
             spatial_features_2d = self.naive_compressor(spatial_features_2d)
 
-        comm_rates = spatial_features_2d.count_nonzero().item()
+        # comm_rates = spatial_features_2d.count_nonzero().item()
         # print(spatial_features_2d[0].count_nonzero().item(), spatial_features_2d.shape)
-
+        # print(comm_rates)
         # N, C, H, W -> B,  L, C, H, W
         regroup_feature, mask = regroup(spatial_features_2d,
                                         record_len,
@@ -123,6 +124,7 @@ class PointPillarCoBEVT(nn.Module):
 
         output_dict.update({
             'mask': 0,
+            'each_mask': 0,
             'comm_rate': comm_rates
         })
 

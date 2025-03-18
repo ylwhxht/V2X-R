@@ -123,6 +123,7 @@ def inference_intermediate_fusion_withcomm(batch_data, model, dataset):
     mask = output_dict['ego']['mask']
     each_mask = output_dict['ego']['each_mask']
     return pred_box_tensor, pred_score, gt_box_tensor, comm_rates, mask, each_mask
+    # return pred_box_tensor, pred_score, gt_box_tensor, comm_rates, mask
     
 def inference_intermediate_fusion(batch_data, model, dataset):
     """

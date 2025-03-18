@@ -142,8 +142,8 @@ class PointPillarScope(nn.Module):
         regroup_feature_list_large = []  
         # print('data_dict_list:',data_dict_list.keys())
         for origin_data in data_dict_list:  
-            data_dict = origin_data['ego'] # train
-            # data_dict = data_dict_list # inference
+            # data_dict = origin_data['ego'] # train
+            data_dict = data_dict_list # inference
             # voxel_features = data_dict['processed_lidar']['voxel_features']
             # voxel_coords = data_dict['processed_lidar']['voxel_coords']
             # voxel_num_points = data_dict['processed_lidar']['voxel_num_points']

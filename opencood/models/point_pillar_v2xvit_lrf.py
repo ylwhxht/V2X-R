@@ -106,6 +106,7 @@ class PointPillarV2XVitLRF(nn.Module):
             torch.cat([lidar_batch_dict['spatial_features'], radar_batch_dict['spatial_features']],dim = 1),
             'record_len': record_len
         } 
+        comm_rates = batch_dict['spatial_features'].count_nonzero().item()
         spatial_correction_matrix = data_dict['spatial_correction_matrix']
 
         # B, max_cav, 3(dt dv infra), 1, 1
@@ -121,6 +122,8 @@ class PointPillarV2XVitLRF(nn.Module):
         # compressor
         if self.compression:
             spatial_features_2d = self.naive_compressor(spatial_features_2d)
+        # comm_rates = spatial_features_2d.count_nonzero().item()
+        # print(comm_rates)
         # N, C, H, W -> B,  L, C, H, W
         regroup_feature, mask = regroup(spatial_features_2d,
                                         record_len,
@@ -143,5 +146,9 @@ class PointPillarV2XVitLRF(nn.Module):
 
         output_dict = {'psm': psm,
                        'rm': rm}
-
+        output_dict.update({
+            'mask': 0,
+            'each_mask': 0,
+            'comm_rate': comm_rates
+        })
         return output_dict
