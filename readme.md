@@ -115,7 +115,7 @@ We provide calibration information for each sensor (LiDAR, 4D radar, camera) of 
 ## :balloon: Benchmark and Models Zoo
 
 ### Introduction
-All benchmark model can be downloaded in [here](http://39.98.109.195:1000/) using the username "Guest" and the password "guest_CMD".
+All benchmark model can be downloaded in [our server](http://39.98.109.195:1000/) (using the username "Guest" and the password "guest_CMD") or [huggingface](https://huggingface.co/hx24/V2X-R_Benchmark).
 
 If you need to run the following pre trained models:
 1. Download the corresponding pre-trained model to **folder A** and **rename it as 0.pth**
