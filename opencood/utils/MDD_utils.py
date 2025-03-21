@@ -8,7 +8,6 @@ import math
 
 from inspect import isfunction
 from PIL import Image, ImageDraw, ImageFont
-from einops import repeat
 
 
 def log_txt_as_img(wh, xc, size=10):
