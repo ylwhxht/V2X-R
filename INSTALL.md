@@ -1,4 +1,4 @@
-
+ 
 # Install
 ## 1. Clone (or download) the source code 
 ```
@@ -45,7 +45,7 @@ python setup.py develop
 # Bbx IOU cuda version compile
 python opencood/utils/setup.py build_ext --inplace
 
-# FPVRCNN's iou_loss dependency (optional)
+# FPVRCNN's iou_loss dependency
 python opencood/pcdet_utils/setup.py build_ext --inplace
 ```
 
