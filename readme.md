@@ -61,9 +61,7 @@ The first V2X dataset incorporates LiDAR, camera, and **4D radar**. V2X-R contai
 Thanks to the [CARLA](https://github.com/carla-simulator/carla) simulator and the [OpenCDA](https://github.com/ucla-mobility/OpenCDA) framework, our V2X-R simulation dataset was implemented on top of them. In addition, our dataset route acquisition process partly references [V2XViT](https://github.com/DerrickXuNu/v2x-vit), which researchers can reproduce according to the data_protocol in the dataset.
 
 ### Download and Decompression
-:ledger: Log in [here](http://39.98.109.195:1000/) using the username "Guest" and the password "guest_CMD" to download the dataset.
-
-Another [download method](https://huggingface.co/datasets/hx24/V2X-R/tree/main) for V2X-Rdataset (huggingface).
+:ledger: [Here](https://huggingface.co/datasets/hx24/V2X-R/tree/main) for V2X-Rdataset (huggingface).
 
 
 Since the data is large (including 3xLiDAR{normal, fog, snow}, 1xradar, 4ximages for each agent). We have compressed the sequence data of each agent, you can refer to this code for batch decompression after downloading.
