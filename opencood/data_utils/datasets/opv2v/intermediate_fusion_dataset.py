@@ -353,7 +353,7 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
         intrinsic = np.array(ego_params['camera0']['intrinsic'])
         # img_shape = selected_cav_base['camera0'].shape
         # 如果selected_cav_base['camera0']是图像对象，使用size获取图像尺寸
-        img_size = selected_cav_base['camera0'].size  # 返回 (宽度, 高度)
+        img_size = [800, 600]  # 返回 (宽度, 高度)
         img_shape = (img_size[1], img_size[0])  # 转换为 (高度, 宽度)
         ext_matrix = ego_params['c2e_transformation_matrix']
         ext_matrix = np.linalg.inv(ext_matrix)[:3,:4]

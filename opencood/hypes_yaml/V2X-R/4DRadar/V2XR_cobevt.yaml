@@ -2,9 +2,6 @@ name: V2XR_cobevt
 root_dir: '/mnt/ssd8T/Cooperative_Perception/V2X-R/train'
 validate_dir: '/mnt/ssd8T/Cooperative_Perception/V2X-R/validate'
 fov: True
-train_sim: false
-eval_sim: false
-sim_weather: '_fog_0.060' #fog_0.060,'_snow_2.5_2.0'
 
 # wild_setting:
 #   async: false

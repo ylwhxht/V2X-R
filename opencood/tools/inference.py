@@ -11,7 +11,7 @@ import sys
 root_path = os.path.abspath(__file__)
 root_path = '/'.join(root_path.split('/')[:-3])
 sys.path.append(root_path)
-
+import pickle
 import torch
 from torch.utils.data import DataLoader
 
@@ -45,6 +45,7 @@ def test_parser():
                         help='Set the checkpoint')
     parser.add_argument('--comm_thre', type=float, default=None,
                         help='Communication confidence threshold')
+    parser.add_argument('--test_eval', action='store_true', default=False, help='Infer testset and save to file')
     opt = parser.parse_args()
     return opt
 
@@ -79,7 +80,7 @@ def main():
 
     data_loader = DataLoader(opencood_dataset,
                              batch_size=1,
-                             num_workers=16,
+                             num_workers=8,
                              collate_fn=opencood_dataset.collate_batch_test,
                              shuffle=False,
                              pin_memory=False,
@@ -110,6 +111,10 @@ def main():
 
     total_comm_rates = []
     # total_box = []
+    if opt.test_eval:
+        results_save_path = os.path.join(opt.model_dir, 'results.pkl')
+        pred_results = []
+        print('Infering on Testset, Saving in', results_save_path)
     for i, batch_data in tqdm(enumerate(data_loader)):
         with torch.no_grad():
             # _batch_data = batch_data[0]
@@ -138,22 +143,27 @@ def main():
                 raise NotImplementedError('Only early, late and intermediate, no, intermediate_with_comm fusion modes are supported.')
             if pred_box_tensor is None:
                 continue
-
-            eval_utils.caluclate_tp_fp(pred_box_tensor,
-                                       pred_score,
-                                       gt_box_tensor,
-                                       result_stat,
-                                       0.3)
-            eval_utils.caluclate_tp_fp(pred_box_tensor,
-                                       pred_score,
-                                       gt_box_tensor,
-                                       result_stat,
-                                       0.5)
-            eval_utils.caluclate_tp_fp(pred_box_tensor,
-                                       pred_score,
-                                       gt_box_tensor,
-                                       result_stat,
-                                       0.7)
+            if opt.test_eval:
+                frame_pred_results = {}
+                frame_pred_results['boxes_3d'] = pred_box_tensor.detach().cpu().numpy()
+                frame_pred_results['score'] = pred_score.detach().cpu().numpy()
+                pred_results.append(frame_pred_results)
+            else:
+                eval_utils.caluclate_tp_fp(pred_box_tensor,
+                                        pred_score,
+                                        gt_box_tensor,
+                                        result_stat,
+                                        0.3)
+                eval_utils.caluclate_tp_fp(pred_box_tensor,
+                                        pred_score,
+                                        gt_box_tensor,
+                                        result_stat,
+                                        0.5)
+                eval_utils.caluclate_tp_fp(pred_box_tensor,
+                                        pred_score,
+                                        gt_box_tensor,
+                                        result_stat,
+                                        0.7)
                                        
             if opt.save_npy:
                 npy_save_path = os.path.join(opt.model_dir, 'npy')
@@ -161,48 +171,7 @@ def main():
                     os.makedirs(npy_save_path)
                 inference_utils.save_prediction_gt(pred_box_tensor, gt_box_tensor, batch_data['ego']['origin_lidar'][0], i, npy_save_path)
 
-            # if opt.save_vis_n and opt.save_vis_n >i:
             if opt.save_vis:
-                """
-                vis_save_path = os.path.join(opt.model_dir, 'vis_lidar')
-                if not os.path.exists(vis_save_path):
-                    os.makedirs(vis_save_path)
-                vis_save_path = os.path.join(opt.model_dir, 'vis_lidar/ori_%05d.png' % i)
-                simple_vis.visualize(None, gt_box_tensor, batch_data['ego']['origin_lidar'][0], hypes['postprocess']['gt_range'],
-                            vis_save_path, method='3d', vis_gt_box=False, vis_pred_box=False, left_hand=False)
-
-                vis_save_path = os.path.join(opt.model_dir, 'vis_image')
-                if not os.path.exists(vis_save_path):
-                    os.makedirs(vis_save_path)
-                image = batch_data['ego']['image_inputs']['ori_imgs'][0][0].cpu().numpy()
-                vis_save_path = os.path.join(opt.model_dir, 'vis_image/camera0_%05d.png' % i)
-                pil_image = Image.fromarray(image.astype(np.uint8))
-                pil_image.save(vis_save_path)
-                
-                
-                vis_save_path = os.path.join(opt.model_dir, 'vis_depth')
-                if not os.path.exists(vis_save_path):
-                    os.makedirs(vis_save_path)
-                vis_save_path = os.path.join(opt.model_dir, 'vis_depth/depth_%05d.png' % i)
-                depth_map = batch_data['ego']['image_inputs']['depth_map'][0][0].cpu().numpy()
-                # 3, 360, 480 / 1, 360, 480
-                print(np.max(depth_map), np.min(depth_map))
-                _max, _min = np.max(depth_map), np.min(depth_map)
-                depth_map = (depth_map - _min) / (_max - _min)
-                depth_mask = (depth_map >= 1).astype(np.float32)
-                depth_map = depth_map[0]
-                H, W = depth_map.shape
-                draw_depth = np.ones((3,H,W))
-                draw_depth[0] = draw_depth[0] * (depth_map*(1-depth_mask)*255+depth_mask*255)
-                draw_depth[1] = draw_depth[1] * (depth_map*(1-depth_mask)*140+depth_mask*255)
-                draw_depth[2] = draw_depth[2] * (depth_map*(1-depth_mask)*0+depth_mask*255)
-                draw_depth = draw_depth.transpose(1,2,0)
-
-                draw_depth[draw_depth==0] = 255
-                pil_depth = Image.fromarray(draw_depth.astype(np.uint8))
-                pil_depth.save(vis_save_path)
-                """
-                
                 vis_save_path = os.path.join(opt.model_dir, 'vis_3d')
                 if not os.path.exists(vis_save_path):
                     os.makedirs(vis_save_path)
@@ -218,111 +187,9 @@ def main():
                 simple_vis.visualize(pred_box_tensor, gt_box_tensor, batch_data['ego']['origin_lidar'][0],
                                      hypes['preprocess']['cav_lidar_range'], # hypes['postprocess']['gt_range'], 
                                      vis_save_path, method='bev', left_hand=left_hand, vis_pred_box=True)
-                # if opt.fusion_method == 'intermediate_with_comm':
-                #     vis_save_path = os.path.join(opt.model_dir, 'vis_mask')
-                #     if not os.path.exists(vis_save_path):
-                #         os.makedirs(vis_save_path)
-                #     vis_save_path = os.path.join(opt.model_dir, 'vis_mask/%05d.png' % i)
-
-                #     # 1, H, W
-                #     mask = mask[0][0].cpu().numpy()
-                #     H, W = mask.shape
-                #     draw_map = np.zeros((H*W, 3))
-
-                #     mask1d = mask.reshape(-1)
-
-                #     for index, value in enumerate(mask1d):
-                #         draw_map[index][0] = 255 if value==2 or value==4 else 0
-                #         draw_map[index][1] = 255 if value==1 or value==4 else 125 if value==2 else 0
-                #         draw_map[index][2] = 255 if value==3 or value==4 else 0
-
-                #     # 1:fusion cell, green = [0,255,0]
-                #     # 2:LiDAR cell, orange = [255,125,0]
-                #     # 3:camera cell, blue = [0,0,255]
-                #     # 4:other cell, white = [255, 255, 255] black=[0,0,0]
-                #     draw_map = draw_map.reshape(H, W, 3)
-                #     pil_depth = Image.fromarray(draw_map.astype(np.uint8))
-                #     pil_depth.save(vis_save_path)
-
-
-                #     vis_save_path = os.path.join(opt.model_dir, 'vis_emask')
-                #     if not os.path.exists(vis_save_path):
-                #         os.makedirs(vis_save_path)
-
-                #     each_mask = each_mask[:,0]
-                #     draw_emap = np.zeros((2, H*W, 3))
-                #     emask1d = each_mask.reshape(2, H*W)
-
-                #     for j in range(2):
-                #         for index, value in enumerate(emask1d[j]):
-                #             draw_emap[j][index][0] = 255 if value else 0
-                #             draw_emap[j][index][1] = 255 if value else 0
-                #             draw_emap[j][index][2] = 255 if value else 0
-                #         vis_save_path = os.path.join(opt.model_dir, 'vis_emask/{}_{}.png'.format(i, j))
-
-                #         # 1:fusion cell, green = [0,255,0]
-                #         # 2:LiDAR cell, orange = [255,125,0]
-                #         # 3:camera cell, blue = [0,0,255]
-                #         # 4:other cell, white = [255, 255, 255] black=[0,0,0]
-                #         emap = draw_emap[j].reshape(H, W, 3)
-                #         pil_mask = Image.fromarray(emap.astype(np.uint8))
-                #         pil_mask.save(vis_save_path)
-                """
-                
-                if opt.fusion_method == 'intermediate_with_comm':
-                    vis_save_path = os.path.join(opt.model_dir, 'vis_mask')
-                    if not os.path.exists(vis_save_path):
-                        os.makedirs(vis_save_path)
-                    vis_save_path = os.path.join(opt.model_dir, 'vis_mask/%05d.png' % i)
-
-                    # 1, H, W
-                    mask = mask[0][0].cpu().numpy()
-                    H, W = mask.shape
-                    draw_map = np.zeros((H*W, 3))
-
-                    mask1d = mask.reshape(-1)
-
-                    for index, value in enumerate(mask1d):
-                        draw_map[index][0] = 255 if value==2 or value==4 else 0
-                        draw_map[index][1] = 255 if value==1 or value==4 else 125 if value==2 else 0
-                        draw_map[index][2] = 255 if value==3 or value==4 else 0
-
-                    # 1:fusion cell, green = [0,255,0]
-                    # 2:LiDAR cell, orange = [255,125,0]
-                    # 3:camera cell, blue = [0,0,255]
-                    # 4:other cell, white = [255, 255, 255] black=[0,0,0]
-                    draw_map = draw_map.reshape(H, W, 3)
-                    pil_depth = Image.fromarray(draw_map.astype(np.uint8))
-                    pil_depth.save(vis_save_path)
-
-
-                    vis_save_path = os.path.join(opt.model_dir, 'vis_emask')
-                    if not os.path.exists(vis_save_path):
-                        os.makedirs(vis_save_path)
-
-                    each_mask = each_mask[:,0]
-                    draw_emap = np.zeros((2, H*W, 3))
-                    emask1d = each_mask.reshape(2, H*W)
-
-                    for j in range(2):
-                        for index, value in enumerate(emask1d[j]):
-                            draw_emap[j][index][0] = 255 if value else 0
-                            draw_emap[j][index][1] = 255 if value else 0
-                            draw_emap[j][index][2] = 255 if value else 0
-                        vis_save_path = os.path.join(opt.model_dir, 'vis_emask/{}_{}.png'.format(i, j))
-
-                        # 1:fusion cell, green = [0,255,0]
-                        # 2:LiDAR cell, orange = [255,125,0]
-                        # 3:camera cell, blue = [0,0,255]
-                        # 4:other cell, white = [255, 255, 255] black=[0,0,0]
-                        emap = draw_emap[j].reshape(H, W, 3)
-                        pil_mask = Image.fromarray(emap.astype(np.uint8))
-                        pil_mask.save(vis_save_path)
-                """
-                pass
-            
-    # print('total_box: ', sum(total_box)/len(total_box))
-
+    if opt.test_eval:
+        with open(results_save_path, 'wb') as f:
+            pickle.dump(pred_results, f)
     if len(total_comm_rates) > 0:
         comm_rates = (sum(total_comm_rates)/len(total_comm_rates))
         if not isinstance(comm_rates, float):

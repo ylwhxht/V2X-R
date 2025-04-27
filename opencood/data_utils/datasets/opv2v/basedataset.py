@@ -337,15 +337,6 @@ class BaseDataset(Dataset):
             data[cav_id]['de_lidar_np'] = data[cav_id]['lidar_np'][label==0]
             data[cav_id]['radar_np'] = \
                 pcd_utils.pcd_to_np(cav_content[timestamp_key_delay]['radar'])
-            #data[cav_id]['camera0'] = load_camera_data(cav_content[timestamp_key_delay]['camera0'])[0]
-                
-            # data[cav_id]['lidar_np'] = \
-            #     pcd_utils.pcd_to_np(cav_content[timestamp_key_delay]['lidar'])
-            # data[cav_id]['radar_np'] = \
-            #     pcd_utils.pcd_to_np(cav_content[timestamp_key_delay]['radar'])
-            
-            data[cav_id]['camera0'] = \
-                load_camera_data(cav_content[timestamp_key_delay]['camera0'])[0]
             
         return data,scenario_index,timestamp_key
 
@@ -610,7 +601,8 @@ class BaseDataset(Dataset):
                 dtype=np.float32)
         
         # we always use current timestamp's gt bbx to gain a fair evaluation
-        delay_params['vehicles'] = cur_params['vehicles']
+        if 'vehicles' in cur_params.keys():
+            delay_params['vehicles'] = cur_params['vehicles']
         delay_params['transformation_matrix'] = transformation_matrix
         delay_params['gt_transformation_matrix'] = \
             gt_transformation_matrix

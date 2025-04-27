@@ -216,8 +216,10 @@ class BasePostprocessor(object):
         # from opencood.data_utils.datasets import GT_RANGE_OPV2V
 
         tmp_object_dict = {}
-        for cav_content in cav_contents:
-            tmp_object_dict.update(cav_content['params']['vehicles'])
+        if 'vehicles' in cav_contents[0]['params']:
+            for cav_content in cav_contents:
+                tmp_object_dict.update(cav_content['params']['vehicles'])
+
 
         output_dict = {}
         filter_range = self.params['anchor_args']['cav_lidar_range'] # if self.train else GT_RANGE_OPV2V
