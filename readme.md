@@ -6,14 +6,8 @@ The first V2X dataset incorporates LiDAR, camera, and **4D radar**. V2X-R contai
 </div>
 
 
-
-### Dataset Collection
-Thanks to the [CARLA](https://github.com/carla-simulator/carla) simulator and the [OpenCDA](https://github.com/ucla-mobility/OpenCDA) framework, our V2X-R simulation dataset was implemented on top of them. In addition, our dataset route acquisition process partly references [V2XViT](https://github.com/DerrickXuNu/v2x-vit), which researchers can reproduce according to the data_protocol in the dataset.
-
-### Download and Decompression
-:ledger: Log in [here](http://39.98.109.195:1000/) using the username "Guest" and the password "guest_CMD" to download the dataset.
-
-Another [download method](https://huggingface.co/datasets/hx24/V2X-R/tree/main) for V2X-Rdataset (huggingface).
+### Data Download and Decompression
+[Here](https://huggingface.co/datasets/hx24/V2X-R_Challenge2025) for downloading V2X-Rdataset (huggingface).
 
 
 Since the data is large (including 3xLiDAR{normal, fog, snow}, 1xradar, 4ximages for each agent). We have compressed the sequence data of each agent, you can refer to this code for batch decompression after downloading.
@@ -46,12 +40,12 @@ def decompress_v2x_r(root_dir, save_dir):
         executor.map(process_file, args_list)
 
 if __name__ == "__main__":
-    data_directory = '/mnt/16THDD-2/hx/V2X-R_Dataset_test_Challenge2025'
-    output_directory = '/mnt/16THDD-2/hx/V2X-R_Dataset_test_Challenge2025_decompress'
+    data_directory = #TO DO, e.g: '/mnt/16THDD-2/hx/V2X-R_Dataset_test_Challenge2025'
+    output_directory = #TO DO, e.g: '/mnt/16THDD-2/hx/V2X-R_Dataset_test_Challenge2025_decompress'
     decompress_v2x_r(data_directory, output_directory)
 ```
 
-### Structure
+### Data Structure
 :open_file_folder: After download and decompression are finished, the dataset is structured as following:
 
 ```sh
@@ -102,7 +96,7 @@ an early fusion model which utilizes SECOND as the backbone. See [Tutorial 1: Co
 - `worker` (optional) : the number of workers in dataloader, default is 16.
 
 
-#### Training with single-GPU
+#### Training
 For example, to train V2XR_AttFuse (LiDAR-4D radar fusion version) from scratch:
 ```
 CUDA_VISIBLE_DEVICES=0 python opencood/tools/train.py --hypes_yaml opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_AttFuse.yaml --tag 'demo' --worker 16
@@ -113,39 +107,54 @@ To train V2XR_AttFuse from a checkpoint:
 CUDA_VISIBLE_DEVICES=0 python opencood/tools/train.py --hypes_yaml opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_AttFuse.yaml --model_dir opencood/logs/V2XR_AttFuse/test__2024_11_21_16_40_38 --tag 'demo' --worker 16
 ```
 
-#### Training with distributed multi-GPUs
-For example, to train V2XR_AttFuse (LiDAR-4D radar fusion version) from scratch with 4 GPUs:
+To train V2XR_AttFuse with 4 GPUs:
 ```
 CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4  --use_env opencood/tools/train.py --hypes_yaml opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_AttFuse.yaml --tag 'demo' --worker 16
 ```
 
 
+### Validation
 
-### Test the model
-
-Before you run the following command, first make sure the `validation_dir` in config.yaml under your checkpoint folder
+Before validating, modify the `validation_dir` to `validate_path` in config.yaml
 
 ```python
-python opencood/tools/inference.py --model_dir ${CHECKPOINT_FOLDER} --eval_epoch ${epoch_number} --save_vis ${default False}
+python opencood/tools/inference.py --model_dir ${CHECKPOINT_FOLDER} --eval_epoch ${epoch_number} --test_eval
 ```
 Arguments Explanation:
 - `model_dir`: the path to your saved model.
 - `eval_epoch`: int. Choose to inferece which epoch.
-- `save_vis`: bool. Wether to save the visualization result.
 
 For example, to test V2XR_AttFuse (LiDAR-4D radar fusion version) from scratch:
 ```
-CUDA_VISIBLE_DEVICES=0 python opencood/tools/inference.py --model_dir opencood/logs/V2XR_AttFuse/test__2024_11_21_16_40_38 --eval_epoch 30  --save_vis 1
+CUDA_VISIBLE_DEVICES=0 python opencood/tools/inference.py --model_dir opencood/logs/V2XR_AttFuse/test__2024_11_21_16_40_38 --eval_epoch 30
 ```
-The evaluation results  will be dumped in the model directory.
 
+
+### Testing and Submission
+
+Before testing, modify the `validation_dir` to `test_path` in config.yaml under your checkpoint folder and setup `test_eval`
+
+```python
+python opencood/tools/inference.py --model_dir ${CHECKPOINT_FOLDER} --eval_epoch ${epoch_number} --test_eval
+```
+Arguments Explanation:
+- `model_dir`: the path to your saved model.
+- `eval_epoch`: int. Choose to inferece which epoch.
+- `test_eval`: bool. Saving the results to submit.
+
+For example, to test V2XR_AttFuse (LiDAR-4D radar fusion version) from scratch:
+```
+CUDA_VISIBLE_DEVICES=0 python opencood/tools/inference.py --model_dir opencood/logs/V2XR_AttFuse/test__2024_11_21_16_40_38 --eval_epoch 30  --test_eval
+```
+The Inference results will be dumped in the model directory as `results.pkl`, then you can submit this file to our benchmark. (Please do not to modify saved data structure.)
 
 
 
 ## :balloon: Benchmark and Models Zoo
 
 ### Introduction
-All benchmark model can be downloaded in [here](http://39.98.109.195:1000/) using the username "Guest" and the password "guest_CMD".
+All benchmark model can be downloaded in [here](https://huggingface.co/hx24/V2X-R_Benchmark/tree/main).
+
 
 If you need to run the following pre trained models:
 1. Download the corresponding pre-trained model to **folder A** and **rename it as 0.pth**
