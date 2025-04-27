@@ -152,7 +152,7 @@ def calculate_ap(result_stat, iou, global_sort_detections):
     return ap, mrec, mprec
 
 
-def eval_final_results(result_stat, save_path, global_sort_detections=False, eval_epoch=None, noise_level=None):
+def eval_final_results(result_stat, save_path, global_sort_detections=True, eval_epoch=None, noise_level=None):
     dump_dict = {}
     ap_30, mrec_30, mpre_30 = calculate_ap(result_stat, 0.50, global_sort_detections)
     ap_50, mrec_50, mpre_50 = calculate_ap(result_stat, 0.65, global_sort_detections)
