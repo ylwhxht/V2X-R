@@ -70,25 +70,35 @@ Since the data is large (including 3xLiDAR{normal, fog, snow}, 1xradar, 4ximages
 ```python
 import os
 import subprocess
-from multiprocessing import Pool
-def decompress_file(extract_path, file_path):
-    subprocess.run(['7z', 'x', '-o' + extract_path + '/', file_path])
+from concurrent.futures import ThreadPoolExecutor
+
+def process_file(args):
+    root, file, save_dir = args
+    file_path = os.path.join(root, file)
+    path_parts = os.path.normpath(root).split(os.sep)
+    if len(path_parts) >= 2:
+        extract_path = os.path.join(save_dir, path_parts[-2], path_parts[-1])
+    else:
+        extract_path = os.path.join(save_dir, os.path.basename(root))
+    
+    os.makedirs(extract_path, exist_ok=True)
+    subprocess.run(['7z', 'x', '-o' + extract_path + '/', file_path], check=True)
 
 def decompress_v2x_r(root_dir, save_dir):
+    args_list = []
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             if file.endswith('.7z'):
-                file_path = os.path.join(root, file)
-                path = root.split('/')
-                extract_path = os.path.join(save_dir, path[-2], path[-1])
-                os.makedirs(extract_path, exist_ok=True)
-                pool.apply_async(decompress_file, args=(extract_path, file_path))
+                args_list.append((root, file, save_dir))
+    
+    # 创建线程池，max_workers可调整（建议设置为CPU核心数*2）
+    with ThreadPoolExecutor(max_workers=os.cpu_count() * 2) as executor:
+        executor.map(process_file, args_list)
 
-
-pool = Pool()
-data_directory = #downloaded dataset path e.g: '/mnt/16THDD-2/hx/V2X-R_Dataset(compressed)'
-output_directory =  #output dataset path  e.g: '/mnt/16THDD-2/hx/t'
-decompress_v2x_r(data_directory, output_directory)
+if __name__ == "__main__":
+    data_directory = '/mnt/16THDD-2/hx/V2X-R_Dataset_test_Challenge2025'
+    output_directory = '/mnt/16THDD-2/hx/V2X-R_Dataset_test_Challenge2025_decompress'
+    decompress_v2x_r(data_directory, output_directory)
 ```
 
 ### Structure
