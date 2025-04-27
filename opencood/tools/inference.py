@@ -105,9 +105,9 @@ def main():
     #result_stat = {0.3: {'tp': [], 'fp': [], 'gt': 0},
     #               0.5: {'tp': [], 'fp': [], 'gt': 0},
     #               0.7: {'tp': [], 'fp': [], 'gt': 0}}
-    result_stat = {0.3: {'tp': [], 'fp': [], 'gt': 0, 'score': []},                
-                   0.5: {'tp': [], 'fp': [], 'gt': 0, 'score': []},                
-                   0.7: {'tp': [], 'fp': [], 'gt': 0, 'score': []}}
+    result_stat = {0.5: {'tp': [], 'fp': [], 'gt': 0, 'score': []},                
+                   0.65: {'tp': [], 'fp': [], 'gt': 0, 'score': []},                
+                   0.8: {'tp': [], 'fp': [], 'gt': 0, 'score': []}}
 
     total_comm_rates = []
     # total_box = []
@@ -153,17 +153,17 @@ def main():
                                         pred_score,
                                         gt_box_tensor,
                                         result_stat,
-                                        0.3)
-                eval_utils.caluclate_tp_fp(pred_box_tensor,
-                                        pred_score,
-                                        gt_box_tensor,
-                                        result_stat,
                                         0.5)
                 eval_utils.caluclate_tp_fp(pred_box_tensor,
                                         pred_score,
                                         gt_box_tensor,
                                         result_stat,
-                                        0.7)
+                                        0.65)
+                eval_utils.caluclate_tp_fp(pred_box_tensor,
+                                        pred_score,
+                                        gt_box_tensor,
+                                        result_stat,
+                                        0.8)
                                        
             if opt.save_npy:
                 npy_save_path = os.path.join(opt.model_dir, 'npy')

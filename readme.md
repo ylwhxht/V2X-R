@@ -96,7 +96,7 @@ an early fusion model which utilizes SECOND as the backbone. See [Tutorial 1: Co
 - `worker` (optional) : the number of workers in dataloader, default is 16.
 
 
-#### Training
+### Training
 For example, to train V2XR_AttFuse (LiDAR-4D radar fusion version) from scratch:
 ```
 CUDA_VISIBLE_DEVICES=0 python opencood/tools/train.py --hypes_yaml opencood/hypes_yaml/V2X-R/L_4DR_Fusion/V2XR_AttFuse.yaml --tag 'demo' --worker 16
