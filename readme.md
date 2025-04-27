@@ -1,6 +1,6 @@
 # V2X-R: Cooperative LiDAR-4D Radar Fusion for 3D Object Detection with Denoising Diffusion 
 [![paper](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2411.08402)
-[![code](https://img.shields.io/badge/dataset-link-blue)](http://39.98.109.195:1000/)
+[![code](https://img.shields.io/badge/dataset-link-blue)](https://huggingface.co/datasets/hx24/V2X-R/tree/main)
 :balloon:Congratulations to our L4DR paper was accepted by **CVPR2025** ! :balloon:
 <div align="center">
   <img src="images/logo.png" width="200"/>
@@ -63,7 +63,7 @@ Thanks to the [CARLA](https://github.com/carla-simulator/carla) simulator and th
 V2X-R is the first simulated V2X dataset to incorporate LiDAR, camera, and 4D radar modalities. V2X-R contains 12,079 scenarios with 37,727 frames of LiDAR and 4D radar point clouds, 150,908 images, and 170,859 annotated 3D vehicle bounding boxes. We used 8,084/829/3,166 frames for training/ validation/testing in our V2X-R dataset, ensuring there is no overlap in the intersection of the training/validation/testing sets. For each frame, we ensure that the minimum and maximum numbers of agents are 2 and 5 respectively.
 
 ### Download and Decompression
-:ledger: [Here](https://huggingface.co/datasets/hx24/V2X-R/tree/main) for V2X-Rdataset (huggingface).
+:ledger: [Here](https://huggingface.co/datasets/hx24/V2X-R/tree/main) for V2X-Rdataset.
 
 
 Since the data is large (including 3xLiDAR{normal, fog, snow}, 1xradar, 4ximages for each agent). We have compressed the sequence data of each agent, you can refer to this code for batch decompression after downloading.
@@ -115,7 +115,7 @@ We provide calibration information for each sensor (LiDAR, 4D radar, camera) of 
 ## :balloon: Benchmark and Models Zoo
 
 ### Introduction
-All benchmark model can be downloaded in [our server](http://39.98.109.195:1000/) (using the username "Guest" and the password "guest_CMD") or [huggingface](https://huggingface.co/hx24/V2X-R_Benchmark).
+All benchmark model can be downloaded in [huggingface](https://huggingface.co/hx24/V2X-R_Benchmark) or [our server](http://39.98.109.195:1000/) (using the username "Guest" and the password "guest_CMD") .
 
 If you need to run the following pre trained models:
 1. Download the corresponding pre-trained model to **folder A** and **rename it as 0.pth**
