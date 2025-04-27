@@ -136,25 +136,26 @@ def calculate_ap(result_stat, iou):
 def eval_final_results(result_stat, save_path, noise_level=None):
     dump_dict = {}
 
-    ap_30, mrec_30, mpre_30 = calculate_ap(result_stat, 0.30)
-    ap_50, mrec_50, mpre_50 = calculate_ap(result_stat, 0.50)
-    ap_70, mrec_70, mpre_70 = calculate_ap(result_stat, 0.70)
+    ap_30, mrec_30, mpre_30 = calculate_ap(result_stat, 0.50)
+    ap_50, mrec_50, mpre_50 = calculate_ap(result_stat, 0.65)
+    ap_70, mrec_70, mpre_70 = calculate_ap(result_stat, 0.80)
 
-    dump_dict.update({'ap_30': ap_30,
-                      'ap_50': ap_50,
-                      'ap_70': ap_70,
-                      'mpre_50': mpre_50,
-                      'mrec_50': mrec_50,
-                      'mpre_70': mpre_70,
-                      'mrec_70': mrec_70,
+    dump_dict.update({'ap_50': ap_30,
+                      'ap_65': ap_50,
+                      'ap_80': ap_70,
+                      'mpre_65': mpre_50,
+                      'mrec_65': mrec_50,
+                      'mpre_80': mpre_70,
+                      'mrec_80': mrec_70,
                       })
     if noise_level is None:
         yaml_utils.save_yaml(dump_dict, os.path.join(save_path, 'eval.yaml'))
     else:
         yaml_utils.save_yaml(dump_dict, os.path.join(save_path, f'eval_{noise_level}.yaml'))
 
-    print('The Average Precision at IOU 0.3 is %.2f, '
-          'The Average Precision at IOU 0.5 is %.2f, '
-          'The Average Precision at IOU 0.7 is %.2f' % (ap_30, ap_50, ap_70))
-
-    return ap_30, ap_50, ap_70
+    map = (ap_30 + ap_50 + ap_70) / 3.0
+    print('The Average Precision at IOU 0.50 is %.2f, '
+          'The Average Precision at IOU 0.65 is %.2f, '
+          'The Average Precision at IOU 0.80 is %.2f, ' 
+          'The Mean Average Precision is %.2f' % (ap_30*100, ap_50*100, ap_70*100, map*100))
+    return ap_30, ap_50, ap_70, map

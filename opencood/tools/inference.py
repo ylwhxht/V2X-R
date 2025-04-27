@@ -190,21 +190,13 @@ def main():
     if opt.test_eval:
         with open(results_save_path, 'wb') as f:
             pickle.dump(pred_results, f)
-    if len(total_comm_rates) > 0:
-        comm_rates = (sum(total_comm_rates)/len(total_comm_rates))
-        if not isinstance(comm_rates, float):
-            comm_rates = comm_rates.item()
     else:
-        comm_rates = 0
-    ap_30, ap_50, ap_70 = eval_utils.eval_final_results(result_stat, opt.model_dir)
-    import math
-    #comm_rates_base2=math.log(comm_rates,2)
-    with open(os.path.join(saved_path, 'result.txt'), 'a+') as f:
-        msg = 'Epoch: {} | AP @0.3: {:.04f} | AP @0.5: {:.04f} | AP @0.7: {:.04f} | comm_rate: {:.06f} \n'.format(epoch_id, ap_30, ap_50, ap_70, comm_rates)
-        if opt.comm_thre is not None:
-            msg = 'Epoch: {} | AP @0.3: {:.04f} | AP @0.5: {:.04f} | AP @0.7: {:.04f} | comm_rate: {:.06f} | comm_thre: {:.04f}\n'.format(epoch_id, ap_30, ap_50, ap_70, comm_rates, opt.comm_thre)
-        f.write(msg)
-        print(msg)
+        ap_50, ap_65, ap_80, mAP = eval_utils.eval_final_results(result_stat, opt.model_dir)
+
+        with open(os.path.join(saved_path, 'result.txt'), 'a+') as f:
+            msg = 'Epoch: {} | AP @0.5: {:.04f} | AP @0.65: {:.04f} | AP @0.8: {:.04f} | Mean AP: {:.06f} \n'.format(epoch_id, ap_50, ap_65, ap_80, mAP)
+            f.write(msg)
+            print(msg)
 
 
 if __name__ == '__main__':
