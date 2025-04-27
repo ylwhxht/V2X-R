@@ -152,27 +152,29 @@ def calculate_ap(result_stat, iou, global_sort_detections):
     return ap, mrec, mprec
 
 
-def eval_final_results(result_stat, save_path, global_sort_detections=False, eval_epoch=None):
+def eval_final_results(result_stat, save_path, global_sort_detections=True, eval_epoch=None, noise_level=None):
     dump_dict = {}
+    ap_30, mrec_30, mpre_30 = calculate_ap(result_stat, 0.50, global_sort_detections)
+    ap_50, mrec_50, mpre_50 = calculate_ap(result_stat, 0.65, global_sort_detections)
+    ap_70, mrec_70, mpre_70 = calculate_ap(result_stat, 0.80, global_sort_detections)
 
-    ap_30, mrec_30, mpre_30 = calculate_ap(result_stat, 0.30, global_sort_detections)
-    ap_50, mrec_50, mpre_50 = calculate_ap(result_stat, 0.50, global_sort_detections)
-    ap_70, mrec_70, mpre_70 = calculate_ap(result_stat, 0.70, global_sort_detections)
 
-    dump_dict.update({'ap_30': ap_30,
-                      'ap_50': ap_50,
-                      'ap_70': ap_70,
-                      'mpre_50': mpre_50,
-                      'mrec_50': mrec_50,
-                      'mpre_70': mpre_70,
-                      'mrec_70': mrec_70,
+    dump_dict.update({'ap_50': ap_30,
+                      'ap_65': ap_50,
+                      'ap_80': ap_70,
+                      'mpre_65': mpre_50,
+                      'mrec_65': mrec_50,
+                      'mpre_80': mpre_70,
+                      'mrec_80': mrec_70,
                       })
-    
-    # output_file = 'eval.yaml' if not global_sort_detections else 'eval_global_sort.yaml'
-    output_file = f'eval_epoch{eval_epoch}.yaml' if not global_sort_detections else 'eval_global_sort.yaml'
-    yaml_utils.save_yaml(dump_dict, os.path.join(save_path, output_file))
+    if noise_level is None:
+        yaml_utils.save_yaml(dump_dict, os.path.join(save_path, f'eval{eval_epoch}.yaml'))
+    else:
+        yaml_utils.save_yaml(dump_dict, os.path.join(save_path, f'eval_{eval_epoch}_{noise_level}.yaml'))
 
-    print('The Average Precision at IOU 0.3 is %.2f, '
-          'The Average Precision at IOU 0.5 is %.2f, '
-          'The Average Precision at IOU 0.7 is %.2f' % (ap_30, ap_50, ap_70))
-    return ap_30, ap_50, ap_70
+    map = (ap_30 + ap_50 + ap_70) / 3.0
+    print('The Average Precision at IOU 0.50 is %.2f, '
+          'The Average Precision at IOU 0.65 is %.2f, '
+          'The Average Precision at IOU 0.80 is %.2f, ' 
+          'The Mean Average Precision is %.2f' % (ap_30*100, ap_50*100, ap_70*100, map*100))
+    return ap_30, ap_50, ap_70, map
