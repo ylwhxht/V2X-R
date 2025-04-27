@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Author: Runsheng Xu <rxx3386@ucla.edu>
+# Author: Runsheng Xu <rxx3386@ucla.edu>, Yifan Lu <yifan_lu@sjtu.edu.cn>
 # License: TDG-Attribution-NonCommercial-NoDistrib
 
 
@@ -68,6 +68,7 @@ def caluclate_tp_fp(det_boxes, det_score, gt_boxes, result_stat, iou_thresh):
 
         # sort the prediction bounding box by score
         score_order_descend = np.argsort(-det_score)
+        det_score = det_score[score_order_descend] # from high to low
         det_polygon_list = list(common_utils.convert_format(det_boxes))
         gt_polygon_list = list(common_utils.convert_format(gt_boxes))
 
@@ -87,12 +88,14 @@ def caluclate_tp_fp(det_boxes, det_score, gt_boxes, result_stat, iou_thresh):
             gt_index = np.argmax(ious)
             gt_polygon_list.pop(gt_index)
 
+        result_stat[iou_thresh]['score'] += det_score.tolist()
+
     result_stat[iou_thresh]['fp'] += fp
     result_stat[iou_thresh]['tp'] += tp
     result_stat[iou_thresh]['gt'] += gt
 
 
-def calculate_ap(result_stat, iou):
+def calculate_ap(result_stat, iou, global_sort_detections):
     """
     Calculate the average precision and recall, and save them into a txt.
 
@@ -100,13 +103,29 @@ def calculate_ap(result_stat, iou):
     ----------
     result_stat : dict
         A dictionary contains fp, tp and gt number.
+        
     iou : float
+        The threshold of iou.
+
+    global_sort_detections : bool
+        Whether to sort the detection results globally.
     """
     iou_5 = result_stat[iou]
 
-    fp = iou_5['fp']
-    tp = iou_5['tp']
-    assert len(fp) == len(tp)
+    if global_sort_detections:
+        fp = np.array(iou_5['fp'])
+        tp = np.array(iou_5['tp'])
+        score = np.array(iou_5['score'])
+
+        assert len(fp) == len(tp) and len(tp) == len(score)
+        sorted_index = np.argsort(-score)
+        fp = fp[sorted_index].tolist()
+        tp = tp[sorted_index].tolist()
+        
+    else:
+        fp = iou_5['fp']
+        tp = iou_5['tp']
+        assert len(fp) == len(tp)
 
     gt_total = iou_5['gt']
 
@@ -133,12 +152,12 @@ def calculate_ap(result_stat, iou):
     return ap, mrec, mprec
 
 
-def eval_final_results(result_stat, save_path, noise_level=None):
+def eval_final_results(result_stat, save_path, global_sort_detections=False, eval_epoch=None, noise_level=None):
     dump_dict = {}
+    ap_30, mrec_30, mpre_30 = calculate_ap(result_stat, 0.50, global_sort_detections)
+    ap_50, mrec_50, mpre_50 = calculate_ap(result_stat, 0.65, global_sort_detections)
+    ap_70, mrec_70, mpre_70 = calculate_ap(result_stat, 0.80, global_sort_detections)
 
-    ap_30, mrec_30, mpre_30 = calculate_ap(result_stat, 0.50)
-    ap_50, mrec_50, mpre_50 = calculate_ap(result_stat, 0.65)
-    ap_70, mrec_70, mpre_70 = calculate_ap(result_stat, 0.80)
 
     dump_dict.update({'ap_50': ap_30,
                       'ap_65': ap_50,
@@ -149,9 +168,9 @@ def eval_final_results(result_stat, save_path, noise_level=None):
                       'mrec_80': mrec_70,
                       })
     if noise_level is None:
-        yaml_utils.save_yaml(dump_dict, os.path.join(save_path, 'eval.yaml'))
+        yaml_utils.save_yaml(dump_dict, os.path.join(save_path, f'eval{eval_epoch}.yaml'))
     else:
-        yaml_utils.save_yaml(dump_dict, os.path.join(save_path, f'eval_{noise_level}.yaml'))
+        yaml_utils.save_yaml(dump_dict, os.path.join(save_path, f'eval_{eval_epoch}_{noise_level}.yaml'))
 
     map = (ap_30 + ap_50 + ap_70) / 3.0
     print('The Average Precision at IOU 0.50 is %.2f, '
