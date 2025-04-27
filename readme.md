@@ -70,6 +70,10 @@ Since the data is large (including 3xLiDAR{normal, fog, snow}, 1xradar, 4ximages
 ```python
 import os
 import subprocess
+from multiprocessing import Pool
+def decompress_file(extract_path, file_path):
+    subprocess.run(['7z', 'x', '-o' + extract_path + '/', file_path])
+
 def decompress_v2x_r(root_dir, save_dir):
     for root, dirs, files in os.walk(root_dir):
         for file in files:
@@ -78,8 +82,10 @@ def decompress_v2x_r(root_dir, save_dir):
                 path = root.split('/')
                 extract_path = os.path.join(save_dir, path[-2], path[-1])
                 os.makedirs(extract_path, exist_ok=True)
-                subprocess.run(['7z', 'x', '-o' + extract_path + '/', file_path])
+                pool.apply_async(decompress_file, args=(extract_path, file_path))
 
+
+pool = Pool()
 data_directory = #downloaded dataset path e.g: '/mnt/16THDD-2/hx/V2X-R_Dataset(compressed)'
 output_directory =  #output dataset path  e.g: '/mnt/16THDD-2/hx/t'
 decompress_v2x_r(data_directory, output_directory)
