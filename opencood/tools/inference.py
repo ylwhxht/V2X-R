@@ -21,6 +21,7 @@ from opencood.tools import train_utils
 from opencood.tools import inference_utils as inference_utils
 from opencood.data_utils.datasets import build_dataset
 from opencood.visualization import simple_vis
+from opencood.utils import box_utils
 from tqdm import tqdm
 from PIL import Image
 import numpy as np
@@ -100,29 +101,17 @@ def main():
     
     model.zero_grad()
     model.eval()
-
-    # Create the dictionary for evaluation
-    #result_stat = {0.3: {'tp': [], 'fp': [], 'gt': 0},
-    #               0.5: {'tp': [], 'fp': [], 'gt': 0},
-    #               0.7: {'tp': [], 'fp': [], 'gt': 0}}
-    result_stat = {0.5: {'tp': [], 'fp': [], 'gt': 0, 'score': []},                
-                   0.65: {'tp': [], 'fp': [], 'gt': 0, 'score': []},                
-                   0.8: {'tp': [], 'fp': [], 'gt': 0, 'score': []}}
-
+    Dis = [-1, 0, 1, 2]
+    result_stat = {}
     total_comm_rates = []
     # total_box = []
     if opt.test_eval:
-        results_save_path = os.path.join(opt.model_dir, 'results.pkl')
+        results_save_path = os.path.join(opt.model_dir, 'pred.pkl')
         pred_results = []
         print('Infering on Testset, Saving in', results_save_path)
     for i, batch_data in tqdm(enumerate(data_loader)):
         with torch.no_grad():
-            # _batch_data = batch_data[0]
             batch_data = train_utils.to_device(batch_data, device)
-            # print(_batch_data.keys())
-            # _batch_data = train_utils.to_device(_batch_data, device)
-            # if 'scope' in hypes['name'] or 'how2comm' in hypes['name']:
-            #     batch_data= _batch_data
             if opt.fusion_method == 'late':
                 pred_box_tensor, pred_score, gt_box_tensor, output_dict = inference_utils.inference_late_fusion(batch_data, model, opencood_dataset)
                 comm = 0
@@ -149,21 +138,18 @@ def main():
                 frame_pred_results['score'] = pred_score.detach().cpu().numpy()
                 pred_results.append(frame_pred_results)
             else:
-                eval_utils.caluclate_tp_fp(pred_box_tensor,
-                                        pred_score,
-                                        gt_box_tensor,
-                                        result_stat,
-                                        0.5)
-                eval_utils.caluclate_tp_fp(pred_box_tensor,
-                                        pred_score,
-                                        gt_box_tensor,
-                                        result_stat,
-                                        0.65)
-                eval_utils.caluclate_tp_fp(pred_box_tensor,
-                                        pred_score,
-                                        gt_box_tensor,
-                                        result_stat,
-                                        0.8)
+                for dis in Dis:
+                    result_stat.update({dis: {'tp': [], 'fp': [], 'gt': 0, 'score': []}})
+                    pred_box_center = box_utils.corner_to_center(pred_box_tensor.detach().cpu().numpy())
+                    gt_box_center = box_utils.corner_to_center(gt_box_tensor.detach().cpu().numpy())
+                    eval_utils.caluclate_tp_fp(det_boxes = pred_box_tensor,
+                                                pred_box_center = pred_box_center,
+                                                det_score = pred_score,
+                                                gt_boxes = gt_box_tensor,
+                                                gt_box_center = gt_box_center,
+                                                result_stat = result_stat,
+                                                iou_thresh = 0.7,
+                                                dis_level=dis)
                                        
             if opt.save_npy:
                 npy_save_path = os.path.join(opt.model_dir, 'npy')
@@ -191,10 +177,12 @@ def main():
         with open(results_save_path, 'wb') as f:
             pickle.dump(pred_results, f)
     else:
-        ap_50, ap_65, ap_80, mAP = eval_utils.eval_final_results(result_stat, opt.model_dir)
+        AP_70 = []
+        for dis in Dis:
+            AP_70.append(eval_utils.eval_final_results(result_stat, distance=dis))
 
         with open(os.path.join(saved_path, 'result.txt'), 'a+') as f:
-            msg = 'Epoch: {} | AP @0.5: {:.04f} | AP @0.65: {:.04f} | AP @0.8: {:.04f} | Mean AP: {:.06f} \n'.format(epoch_id, ap_50, ap_65, ap_80, mAP)
+            msg = 'The Total Average Precision (IOU = 0.7) of Epoch {} is {:.04f}\n————The AP at distance < 30  is {:.04f}\n————The AP at distance 30~50 is {:.04f}\n————The AP at distance >= 50 is {:.04f}\n'.format(epoch_id, AP_70[0], AP_70[1], AP_70[2], AP_70[3])
             f.write(msg)
             print(msg)
 

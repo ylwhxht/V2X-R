@@ -38,7 +38,24 @@ def voc_ap(rec, prec):
     return ap, mrec, mpre
 
 
-def caluclate_tp_fp(det_boxes, det_score, gt_boxes, result_stat, iou_thresh):
+def distance_filter(boxes, level):
+    ignore = np.ones(boxes.shape[0], dtype=bool)  # all true
+    dist = np.sqrt(np.sum(boxes[:, 0:3] * boxes[:, 0:3], axis=1))
+
+    if level == 0:  # 0-30m
+        flag = dist < 30
+    elif level == 1:  # 30-50m
+        flag = (dist >= 30) & (dist < 50)
+    elif level == 2:  # 50m-inf
+        flag = dist >= 50
+    else:
+        assert False, 'level < 3 for distance metric, found level %s' % (str(level))
+
+    ignore[flag] = False
+    return ignore
+
+
+def caluclate_tp_fp(det_boxes, pred_box_center, det_score, gt_boxes, gt_box_center, result_stat, iou_thresh, dis_level=0):
     """
     Calculate the true positive and false positive numbers of the current
     frames.
@@ -58,8 +75,15 @@ def caluclate_tp_fp(det_boxes, det_score, gt_boxes, result_stat, iou_thresh):
     """
     # fp, tp and gt in the current frame
     fp = []
-    tp = []
+    tp = [] 
+    if dis_level > -1:
+        ignore = distance_filter(gt_box_center, dis_level)
+        gt_boxes = gt_boxes[~ignore, ...]
+        ignore = distance_filter(pred_box_center, dis_level)
+        det_boxes = det_boxes[~ignore, ...]
+        det_score = det_score[~ignore]
     gt = gt_boxes.shape[0]
+    
     if det_boxes is not None:
         # convert bounding boxes to numpy array
         det_boxes = common_utils.torch_tensor_to_numpy(det_boxes)
@@ -88,14 +112,14 @@ def caluclate_tp_fp(det_boxes, det_score, gt_boxes, result_stat, iou_thresh):
             gt_index = np.argmax(ious)
             gt_polygon_list.pop(gt_index)
 
-        result_stat[iou_thresh]['score'] += det_score.tolist()
+        result_stat[dis_level]['score'] += det_score.tolist()
+    
+    result_stat[dis_level]['fp'] += fp
+    result_stat[dis_level]['tp'] += tp
+    result_stat[dis_level]['gt'] += gt
 
-    result_stat[iou_thresh]['fp'] += fp
-    result_stat[iou_thresh]['tp'] += tp
-    result_stat[iou_thresh]['gt'] += gt
 
-
-def calculate_ap(result_stat, iou, global_sort_detections):
+def calculate_ap(result_stat, distance, global_sort_detections=False):
     """
     Calculate the average precision and recall, and save them into a txt.
 
@@ -110,7 +134,7 @@ def calculate_ap(result_stat, iou, global_sort_detections):
     global_sort_detections : bool
         Whether to sort the detection results globally.
     """
-    iou_5 = result_stat[iou]
+    iou_5 = result_stat[distance]
 
     if global_sort_detections:
         fp = np.array(iou_5['fp'])
@@ -146,35 +170,16 @@ def calculate_ap(result_stat, iou, global_sort_detections):
     prec = tp[:]
     for idx, val in enumerate(tp):
         prec[idx] = float(tp[idx]) / (fp[idx] + tp[idx])
+        
 
     ap, mrec, mprec = voc_ap(rec[:], prec[:])
 
     return ap, mrec, mprec
 
 
-def eval_final_results(result_stat, save_path, global_sort_detections=True, eval_epoch=None, noise_level=None):
+def eval_final_results(result_stat, distance, global_sort_detections=False, eval_epoch=None, noise_level=None):
     dump_dict = {}
-    ap_30, mrec_30, mpre_30 = calculate_ap(result_stat, 0.50, global_sort_detections)
-    ap_50, mrec_50, mpre_50 = calculate_ap(result_stat, 0.65, global_sort_detections)
-    ap_70, mrec_70, mpre_70 = calculate_ap(result_stat, 0.80, global_sort_detections)
-
-
-    dump_dict.update({'ap_50': ap_30,
-                      'ap_65': ap_50,
-                      'ap_80': ap_70,
-                      'mpre_65': mpre_50,
-                      'mrec_65': mrec_50,
-                      'mpre_80': mpre_70,
-                      'mrec_80': mrec_70,
-                      })
-    if noise_level is None:
-        yaml_utils.save_yaml(dump_dict, os.path.join(save_path, f'eval{eval_epoch}.yaml'))
-    else:
-        yaml_utils.save_yaml(dump_dict, os.path.join(save_path, f'eval_{eval_epoch}_{noise_level}.yaml'))
-
-    map = (ap_30 + ap_50 + ap_70) / 3.0
-    print('The Average Precision at IOU 0.50 is %.2f, '
-          'The Average Precision at IOU 0.65 is %.2f, '
-          'The Average Precision at IOU 0.80 is %.2f, ' 
-          'The Mean Average Precision is %.2f' % (ap_30*100, ap_50*100, ap_70*100, map*100))
-    return ap_30, ap_50, ap_70, map
+    ap_70, mrec_30, mpre_30 = calculate_ap(result_stat, distance, global_sort_detections)
+    ap_70 *= 100
+    
+    return ap_70
