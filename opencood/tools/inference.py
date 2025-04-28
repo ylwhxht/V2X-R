@@ -103,6 +103,8 @@ def main():
     model.eval()
     Dis = [-1, 0, 1, 2]
     result_stat = {}
+    for dis in Dis:
+        result_stat.update({dis: {'tp': [], 'fp': [], 'gt': 0, 'score': []}})
     total_comm_rates = []
     # total_box = []
     if opt.test_eval:
@@ -139,7 +141,6 @@ def main():
                 pred_results.append(frame_pred_results)
             else:
                 for dis in Dis:
-                    result_stat.update({dis: {'tp': [], 'fp': [], 'gt': 0, 'score': []}})
                     pred_box_center = box_utils.corner_to_center(pred_box_tensor.detach().cpu().numpy())
                     gt_box_center = box_utils.corner_to_center(gt_box_tensor.detach().cpu().numpy())
                     eval_utils.caluclate_tp_fp(det_boxes = pred_box_tensor,
