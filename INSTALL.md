@@ -2,7 +2,7 @@
 # Install
 ## 1. Clone (or download) the source code 
 ```
-git clone https://github.com/ylwhxht/V2X-R.git
+git clone https://github.com/ylwhxht/V2X-R/tree/Challenge2025.git
 cd V2X-R
 ```
  

@@ -147,7 +147,7 @@ For example, to test V2XR_AttFuse (LiDAR-4D radar fusion version) from scratch:
 ```
 CUDA_VISIBLE_DEVICES=0 python opencood/tools/inference.py --model_dir opencood/logs/V2XR_AttFuse/test__2024_11_21_16_40_38 --eval_epoch 30  --test_eval
 ```
-The Inference results will be dumped in the model directory as `results.pkl`, then you can submit this file to our benchmark. (Please do not to modify saved data structure.)
+The Inference results will be dumped in the model directory as `pred.pkl`, then you can submit this file to our benchmark. (Please do not to modify saved data structure.)
 
 
 

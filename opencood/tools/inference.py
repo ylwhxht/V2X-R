@@ -132,14 +132,16 @@ def main():
                 total_comm_rates.append(comm_rates)
             else:
                 raise NotImplementedError('Only early, late and intermediate, no, intermediate_with_comm fusion modes are supported.')
-            if pred_box_tensor is None:
-                continue
+            
             if opt.test_eval:
                 frame_pred_results = {}
-                frame_pred_results['boxes_3d'] = pred_box_tensor.detach().cpu().numpy()
-                frame_pred_results['score'] = pred_score.detach().cpu().numpy()
+                if pred_box_tensor is not None:
+                    frame_pred_results['boxes_3d'] = pred_box_tensor.detach().cpu().numpy()
+                    frame_pred_results['score'] = pred_score.detach().cpu().numpy()
                 pred_results.append(frame_pred_results)
             else:
+                if pred_box_tensor is None:
+                    continue
                 for dis in Dis:
                     pred_box_center = box_utils.corner_to_center(pred_box_tensor.detach().cpu().numpy())
                     gt_box_center = box_utils.corner_to_center(gt_box_tensor.detach().cpu().numpy())

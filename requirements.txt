@@ -15,4 +15,4 @@ shapely
 einops
 efficientnet_pytorch
 mmcv
-timm
+timm==0.4.12
