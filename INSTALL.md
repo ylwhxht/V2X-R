@@ -8,7 +8,7 @@ cd V2X-R
  
 ## 2. Create conda environment and set up the base dependencies
 ```
-conda create --name v2xr python=3.7 cmake=3.22.1 setuptools=58.0
+conda create --name v2xr python=3.7 cmake setuptools=58.0
 conda activate v2xr
 conda install cudnn -c conda-forge
 conda install boost
