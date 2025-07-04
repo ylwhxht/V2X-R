@@ -12,7 +12,7 @@ conda create --name v2xr python=3.7 cmake setuptools=58.0
 conda activate v2xr
 conda install cudnn -c conda-forge
 conda install boost
-pip install torch==1.10.1+cu111 torchvision==0.11.2+cu111 torchaudio==0.10.1 -f https://download.pytorch.org/whl/torch_stable.html
+pip install torch==1.10.1+cu111 torchvision==0.11.2+cu111 torchaudio==0.10.1 -f https://mirror.sjtu.edu.cn/pytorch-wheels/torch_stable.html
 ```
 
 ## 3. Install spconv (Support both 1.2.1 and 2.x)
