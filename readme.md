@@ -1,5 +1,8 @@
-# MMT Challenge 2025
-Track 2: LiDAR-4D Radar Fusion for Cooperative 3D Object Detection
+# 点云智能大赛- 赛道六：激光雷达-毫米波雷达融合的协同感知任务
+
+<font color=#0099ff> **Note: The code submission address has been updated to:  [https://www.codabench.org/competitions/9974](https://www.codabench.org/competitions/9974)** </font>
+
+
 ## :balloon: V2X-R Dataset Manual 
 The first V2X dataset incorporates LiDAR, camera, and **4D radar**. V2X-R contains **12,079 scenarios** with **37,727 frames of LiDAR and 4D radar point clouds**, **150,908 images**, and **170,859 annotated 3D vehicle bounding boxes**.
 <div align="center">
