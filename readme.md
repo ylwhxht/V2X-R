@@ -63,7 +63,7 @@ Thanks to the [CARLA](https://github.com/carla-simulator/carla) simulator and th
 V2X-R is the first simulated V2X dataset to incorporate LiDAR, camera, and 4D radar modalities. V2X-R contains 12,079 scenarios with 37,727 frames of LiDAR and 4D radar point clouds, 150,908 images, and 170,859 annotated 3D vehicle bounding boxes. We used 8,084/829/3,166 frames for training/ validation/testing in our V2X-R dataset, ensuring there is no overlap in the intersection of the training/validation/testing sets. For each frame, we ensure that the minimum and maximum numbers of agents are 2 and 5 respectively.
 
 ### Download and Decompression
-:ledger: [Here](https://huggingface.co/datasets/hx24/V2X-R/tree/main) for V2X-Rdataset.
+:ledger: [Here](https://huggingface.co/datasets/hx24/V2X-R/tree/4636ce397b214aee910cfc8ccf25a2dfac1a7906) for V2X-Rdataset.
 
 
 Since the data is large (including 3xLiDAR{normal, fog, snow}, 1xradar, 4ximages for each agent). We have compressed the sequence data of each agent, you can refer to this code for batch decompression after downloading.
