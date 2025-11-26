@@ -1,7 +1,7 @@
 # V2X-R: Cooperative LiDAR-4D Radar Fusion for 3D Object Detection with Denoising Diffusion 
 [![paper](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2411.08402)
 [![code](https://img.shields.io/badge/dataset-link-blue)](https://huggingface.co/datasets/hx24/V2X-R/tree/4636ce397b214aee910cfc8ccf25a2dfac1a7906)
-:balloon:Congratulations to our L4DR paper was accepted by **CVPR2025** ! :balloon:
+:balloon:Congratulations to our V2X-R paper was accepted by **CVPR2025** ! :balloon:
 <div align="center">
   <img src="images/logo.png" width="200"/>
 </div>
